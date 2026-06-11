@@ -395,7 +395,11 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.18); }
 .src-list { list-style: none; }
 .src-list li { display: flex; gap: 1.6rem; padding: 1rem 0; border-bottom: 1px solid var(--bg-light); font-size: 1.2rem; }
 .src-list li:last-child { border-bottom: none; }
+.src-region-hdr { font-size: 1.3rem; font-weight: 700; color: var(--navy); margin: 2rem 0 0.6rem; letter-spacing: 0.04em; }
+.src-region-hdr:first-child { margin-top: 0; }
 .src-org  { font-weight: 700; color: var(--navy); min-width: 22rem; flex-shrink: 0; }
+.src-org a { color: var(--blue); text-decoration: none; }
+.src-org a:hover { text-decoration: underline; }
 .src-desc { color: var(--text-muted); line-height: 1.5; }
 
 .cs-link {
@@ -664,6 +668,7 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
 
         <div class="results-footer">
           Illustrative estimates only. Actual results will vary based on fleet conditions, driver adoption, and operating environment.
+          <span id="footer-disclaimer"></span>
         </div>
       </div>
     </div>
@@ -761,16 +766,58 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
               <a href="https://www.geotab.com/case-study/richards-building-supply/" target="_blank" class="cs-link">Richards Building Supply →</a>
             </div>
           </div>
+          <div class="src-region-hdr">🇺🇸 United States</div>
           <ul class="src-list">
-            <li><span class="src-org">NSC Injury Facts 2023</span><span class="src-desc">National Safety Council — commercial vehicle crash costs, injury severity, fleet incident benchmarks across vehicle types</span></li>
-            <li><span class="src-org">FMCSA Safety Data</span><span class="src-desc">Federal Motor Carrier Safety Administration — large truck/bus crash statistics, crash cost models, incident rate benchmarks</span></li>
-            <li><span class="src-org">ATRI Operational Costs 2023</span><span class="src-desc">American Transportation Research Institute — fuel economy (Class 8: 6.4 MPG avg), OTR driver wages, annual mileage benchmarks</span></li>
-            <li><span class="src-org">ATA Driver Shortage Report 2023</span><span class="src-desc">American Trucking Associations — large carrier turnover 92%, small carrier 72%; driver replacement and training cost data</span></li>
-            <li><span class="src-org">BLS JOLTS / Occupational Outlook</span><span class="src-desc">Bureau of Labor Statistics — occupation-specific turnover rates and wage data by fleet category and industry</span></li>
-            <li><span class="src-org">DOE EERE / EPA Fuel Economy</span><span class="src-desc">Department of Energy / EPA — vehicle MPG by class, fleet telematics efficiency program results averaging 3–7% improvement</span></li>
-            <li><span class="src-org">EIA Retail Fuel Prices</span><span class="src-desc">Energy Information Administration — US average fuel prices, updated Jun 2026. Other regions: NRC (Canada), Eurostat (EU), BEIS (UK), ACCC (Australia)</span></li>
-            <li><span class="src-org">SHRM Recruitment Cost Study</span><span class="src-desc">Society for Human Resource Management — driver replacement cost methodology including recruiting, onboarding, and productivity ramp</span></li>
-            <li><span class="src-org">Industry-specific sources</span><span class="src-desc">NWRA (waste &amp; recycling), IACP (police/emergency), NHTSA (student transport), APWA (public works), EEI (utilities), IADC (oil &amp; gas), CPWR (construction)</span></li>
+            <li><span class="src-org"><a href="https://injuryfacts.nsc.org/" target="_blank">NSC Injury Facts 2023</a></span><span class="src-desc">National Safety Council — commercial vehicle crash costs, injury severity, and fleet incident benchmarks</span></li>
+            <li><span class="src-org"><a href="https://www.fmcsa.dot.gov/safety/data-and-statistics" target="_blank">FMCSA Safety Data</a></span><span class="src-desc">Federal Motor Carrier Safety Administration — large truck/bus crash statistics and crash cost models</span></li>
+            <li><span class="src-org"><a href="https://truckingresearch.org/category/operational-costs/" target="_blank">ATRI Operational Costs 2023</a></span><span class="src-desc">American Transportation Research Institute — fuel economy (Class 8: 6.4 MPG avg), OTR mileage benchmarks</span></li>
+            <li><span class="src-org"><a href="https://www.trucking.org/news-insights/driver-shortage" target="_blank">ATA Driver Shortage Report 2023</a></span><span class="src-desc">American Trucking Associations — carrier turnover rates, driver replacement and training cost data</span></li>
+            <li><span class="src-org"><a href="https://www.bls.gov/jlt/" target="_blank">BLS JOLTS / Occupational Outlook</a></span><span class="src-desc">Bureau of Labor Statistics — occupation-specific turnover rates and wage data by industry sector</span></li>
+            <li><span class="src-org"><a href="https://www.eia.gov/petroleum/gasdiesel/" target="_blank">EIA Retail Fuel Prices</a></span><span class="src-desc">Energy Information Administration — US average fuel prices, updated Jun 2026</span></li>
+            <li><span class="src-org"><a href="https://www.shrm.org/topics-tools/research/cost-of-turnover" target="_blank">SHRM Recruitment Cost Study</a></span><span class="src-desc">Society for Human Resource Management — driver replacement cost methodology</span></li>
+            <li><span class="src-org">Industry-specific (US)</span><span class="src-desc">NWRA (waste &amp; recycling), IACP (police/emergency), NHTSA (student transport), APWA (public works), EEI (utilities), IADC (oil &amp; gas), CPWR (construction)</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇨🇦 Canada</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://oee.nrcan.gc.ca/corporate/statistics/neud/dpa/showTable.cfm?type=CP&sector=tran&juris=ca&rn=60&page=0" target="_blank">NRCan Truck Explanatory Variables 2023</a></span><span class="src-desc">Natural Resources Canada — annual km by truck weight class; medium truck average 22,900 km</span></li>
+            <li><span class="src-org"><a href="https://tc.canada.ca/en/road-transportation/statistics-data/commercial-vehicle-collisions/2021/commercial-vehicle-collisions-canada-2012-2021" target="_blank">Transport Canada — Commercial Vehicle Collisions 2021</a></span><span class="src-desc">Collision rates per 10,000 registered commercial vehicles; basis for per-driver rate derivation</span></li>
+            <li><span class="src-org"><a href="https://truckinghr.com/labour-market-information/" target="_blank">Trucking HR Canada LMI 2024</a></span><span class="src-desc">Long-haul driver turnover rates, vacancy data, and workforce projections</span></li>
+            <li><span class="src-org"><a href="https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/demographic-snapshot-federal-public-service-2023.html" target="_blank">Treasury Board — Public Service Demographic Snapshot 2023</a></span><span class="src-desc">Federal government sector departure rates; basis for Government and Public Works turnover</span></li>
+            <li><span class="src-org"><a href="https://www.buildforce.ca/en/blog/reviewing-canadas-construction-sector-in-2024-part-5-building-a-strong-workforce/" target="_blank">BuildForce Canada 2024</a></span><span class="src-desc">Construction sector workforce retirement and attrition projections</span></li>
+            <li><span class="src-org"><a href="https://www.imercer.com/articleinsights/workforce-turnover-trends-canada" target="_blank">Mercer Canada 2025 Turnover Trends</a></span><span class="src-desc">National voluntary turnover average (10.2%) and sector breakdowns including utilities and professional services</span></li>
+            <li><span class="src-org"><a href="https://www.lytx.com/guide/annual-risk-and-collision-analysis" target="_blank">Lytx Annual Risk &amp; Collision Analysis</a></span><span class="src-desc">Commercial fleet incident rates by industry segment; relative risk ranking across sectors</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇪🇺 European Union</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Accidents_at_work_-_statistics_by_economic_activity" target="_blank">Eurostat ESAW 2023</a></span><span class="src-desc">European Statistics on Accidents at Work — non-fatal incidence rates per 100,000 workers by NACE economic sector; primary basis for EU incident rates</span></li>
+            <li><span class="src-org"><a href="https://road-safety.transport.ec.europa.eu/system/files/2023-02/ff_buses_hgv_20230213.pdf" target="_blank">ERSO Facts &amp; Figures — HGV/Buses 2023</a></span><span class="src-desc">European Road Safety Observatory — HGV annual km average 110,000 km; HGV involvement in EU road fatalities</span></li>
+            <li><span class="src-org"><a href="https://www.iru.org/intelligence/road-transport-intelligence/truck-driver-barometer-2024-europe" target="_blank">IRU Truck Driver Barometer 2024</a></span><span class="src-desc">International Road Transport Union — EU driver shortage, turnover crisis, aging workforce (avg age 47)</span></li>
+            <li><span class="src-org"><a href="https://www.transportenvironment.org/state-of-european-transport/state-of-transport-2025/fleets" target="_blank">Platform for Electromobility / T&amp;E 2025</a></span><span class="src-desc">EU corporate/fleet vehicles average 30,000 km/year; primary basis for professional services and specialty trades mileage</span></li>
+            <li><span class="src-org"><a href="https://www.cedefop.europa.eu/en/data-insights/drivers-and-vehicle-operators-skills-opportunities-and-challenges-2023-update" target="_blank">CEDEFOP 2023 — Drivers &amp; Vehicle Operators</a></span><span class="src-desc">EU skills outlook for transport occupations; construction and trades turnover benchmarks</span></li>
+            <li><span class="src-org"><a href="https://www.ela.europa.eu/en/publications/labour-shortages-and-surpluses-europe-2024" target="_blank">ELA Labour Shortages 2024</a></span><span class="src-desc">European Labour Authority — shortage occupations by sector across EU member states; basis for trades and construction turnover</span></li>
+            <li><span class="src-org"><a href="https://www.eurofound.europa.eu/en/publications/all/eu-road-freight-transport-sector-work-and-employment-conditions" target="_blank">Eurofound — EU Road Freight Transport Sector</a></span><span class="src-desc">Working conditions, employment structure, and churn in EU freight; basis for T&amp;L turnover</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇬🇧 United Kingdom</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/van-statistics-2019-to-2020" target="_blank">DfT Van Statistics 2019–20</a></span><span class="src-desc">Department for Transport — annual miles by van use type (local operations, tools/materials, national); primary basis for UK mileage by segment</span></li>
+            <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/road-freight-statistics-2024/domestic-road-freight-statistics-united-kingdom-2024" target="_blank">DfT Road Freight Statistics 2024</a></span><span class="src-desc">HGV annual mileage benchmarks; basis for UK T&amp;L segment (75,000 miles/year)</span></li>
+            <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/police-workforce-england-and-wales-31-march-2024/police-workforce-england-and-wales-31-march-2024" target="_blank">Home Office Police Workforce Statistics 2024</a></span><span class="src-desc">Police officer leaver rate (6.2%); basis for Police &amp; First Responders turnover</span></li>
+            <li><span class="src-org"><a href="https://www.hrdatahub.com/blog/employee-turnover-by-industry" target="_blank">CIPD / ONS APS — Employee Turnover by Industry 2022–23</a></span><span class="src-desc">Annual turnover rates by sector across UK industries; primary basis for all UK segment turnover rates</span></li>
+            <li><span class="src-org"><a href="https://www.drivingforbetterbusiness.com/articles/accident-frequency-rates/" target="_blank">Driving for Better Business — Accident Frequency Rates</a></span><span class="src-desc">UK fleet-wide commercial vehicle incident rate baseline: 0.09 collisions per driver/year (all sectors)</span></li>
+            <li><span class="src-org"><a href="https://www.hse.gov.uk/statistics/overview.htm" target="_blank">HSE Key Figures 2024/25</a></span><span class="src-desc">Health &amp; Safety Executive — non-fatal workplace injury rates by sector; basis for relative risk adjustments</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇦🇺 Australia</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://www.abs.gov.au/statistics/industry/tourism-and-transport/survey-motor-vehicle-use-australia/latest-release" target="_blank">ABS Survey of Motor Vehicle Use 2020</a></span><span class="src-desc">Annual km by vehicle type — articulated trucks 79,400 km/year; rigid trucks 21,100 km/year</span></li>
+            <li><span class="src-org"><a href="https://www.abs.gov.au/statistics/labour/jobs/job-mobility/latest-release" target="_blank">ABS Job Mobility Feb 2025</a></span><span class="src-desc">Employer-change rates by industry sector; primary basis for all AU segment turnover rates</span></li>
+            <li><span class="src-org"><a href="https://data.safeworkaustralia.gov.au/insights/key-whs-statistics-australia/2024" target="_blank">Safe Work Australia Key WHS Statistics 2024</a></span><span class="src-desc">Workplace injury incidence rates per million hours worked by ANZSIC industry; basis for AU relative risk by segment</span></li>
+            <li><span class="src-org"><a href="https://bic.asn.au/industry-stats/2020-bus-operations-stats/" target="_blank">Bus Industry Confederation — Bus Operations Stats 2020</a></span><span class="src-desc">Annual km for dedicated school services; basis for AU Student Transportation mileage (18,000 km/year)</span></li>
+            <li><span class="src-org"><a href="https://www.tac.vic.gov.au/road-safety/road-users/drivers/fleet-safety" target="_blank">TAC Victoria — Fleet Safety</a></span><span class="src-desc">Transport Accident Commission — 0.25 vehicle incidents per fleet vehicle per year (all company cars); AU fleet collision baseline</span></li>
+            <li><span class="src-org"><a href="https://www.scalesuite.com.au/resources/australian-employee-turnover-statistics-2026" target="_blank">ScaleSuite — AU Employee Turnover Statistics 2026</a></span><span class="src-desc">Industry turnover benchmarks including construction (21% annual average)</span></li>
           </ul>
         </div>
       </div>
@@ -793,95 +840,147 @@ const REGIONS = {
 /* ── Fleet data ────────────────────────────────────────────────────── */
 const FD = {
   'Government': {
-    miles:20000, mpg:20, ir:0.09, tr:0.18, gas:0.50, dsl:0.30,
+    miles:{ US:20000, CA:12400, EU:12400, UK:12000, AU:14300 },
+    mpg:20,
+    ir:{ US:0.09, CA:0.10, EU:0.12, UK:0.09, AU:0.09 },
+    tr:{ US:0.18, CA:0.08, EU:0.08, UK:0.25, AU:0.07 },
+    gas:0.50, dsl:0.30,
     cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
     rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
     desc:'Municipal administration, bylaw enforcement, parks and facilities — mixed sedan and light-truck fleet across varied duty cycles.',
-    src:'NSC Injury Facts; BLS Government Sector JOLTS; ICMA fleet surveys; IBC (CA); DfT (UK)'
+    src:'NSC Injury Facts; BLS JOLTS; ICMA fleet surveys; IBC (CA); DfT van statistics (UK); Treasury Board CA; Eurostat ESAW; ABS Job Mobility (AU)'
   },
   'Public Works': {
-    miles:18000, mpg:12, ir:0.12, tr:0.22, gas:0.20, dsl:0.72,
+    miles:{ US:18000, CA:14200, EU:15500, UK:15000, AU:15500 },
+    mpg:12,
+    ir:{ US:0.12, CA:0.13, EU:0.22, UK:0.10, AU:0.11 },
+    tr:{ US:0.22, CA:0.10, EU:0.15, UK:0.28, AU:0.10 },
+    gas:0.20, dsl:0.72,
     cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
     rc:{ US:11000, CA:10100, EU:8100,  UK:8700,  AU:10500 },
     desc:'Road maintenance, sanitation support, infrastructure repair — heavy trucks and specialized equipment with frequent roadside exposure.',
-    src:'FMCSA crash data; APWA fleet benchmarks; BLS construction/extraction JOLTS; BITRE (AU)'
+    src:'FMCSA; APWA fleet benchmarks; BLS JOLTS; NRCan medium truck survey (CA); DfT (UK); Eurostat ESAW NACE E (EU); BITRE (AU)'
   },
   'Waste & Recycling': {
-    miles:14000, mpg:6, ir:0.14, tr:0.38, gas:0.05, dsl:0.88,
+    miles:{ US:14000, CA:15500, EU:11200, UK:10000, AU:13000 },
+    mpg:6,
+    ir:{ US:0.14, CA:0.22, EU:0.28, UK:0.14, AU:0.14 },
+    tr:{ US:0.38, CA:0.35, EU:0.20, UK:0.37, AU:0.20 },
+    gas:0.05, dsl:0.88,
     cc:{ US:85000, CA:68000, EU:55000, UK:60000, AU:66000 },
     rc:{ US:13000, CA:11900, EU:9600,  UK:10300, AU:12400 },
     desc:'Residential and commercial collection routes — heavy Class 8 vehicles with high stop frequency, backing risk, and extended engine idling.',
-    src:'FMCSA large vehicle crash costs; NWRA workforce survey; ETSC (EU); SWA (AU)'
+    src:'FMCSA large vehicle crash costs; NWRA; EU-OSHA OSHwiki waste sector; Eurostat ESAW (EU); CIPD (UK); Lytx fleet risk data (CA); SWA (AU)'
   },
   'Police & First Responders': {
-    miles:45000, mpg:15, ir:0.15, tr:0.12, gas:0.62, dsl:0.20,
+    miles:{ US:45000, CA:31000, EU:24900, UK:17000, AU:14300 },
+    mpg:15,
+    ir:{ US:0.15, CA:0.15, EU:0.18, UK:0.08, AU:0.09 },
+    tr:{ US:0.12, CA:0.05, EU:0.10, UK:0.06, AU:0.06 },
+    gas:0.62, dsl:0.20,
     cc:{ US:58000, CA:46000, EU:38000, UK:41000, AU:45000 },
     rc:{ US:16000, CA:14700, EU:11800, UK:12700, AU:15300 },
     desc:'Patrol, fire, EMS, and emergency dispatch — high annual mileage with emergency response driving, shift work, and elevated stress environments.',
-    src:'IACP police vehicle data; NSC emergency vehicle crash costs; BLS protective services; HSE (UK)'
+    src:'IACP; NSC emergency vehicle crash costs; BLS protective services; Home Office Police Workforce Statistics (UK); RCMP fleet management (CA); EU-OSHA (EU); ABS (AU)'
   },
   'Student Transportation': {
-    miles:12000, mpg:7, ir:0.06, tr:0.32, gas:0.10, dsl:0.80,
+    miles:{ US:12000, CA:24900, EU:15500, UK:15000, AU:11200 },
+    mpg:7,
+    ir:{ US:0.06, CA:0.05, EU:0.10, UK:0.07, AU:0.07 },
+    tr:{ US:0.32, CA:0.35, EU:0.12, UK:0.22, AU:0.20 },
+    gas:0.10, dsl:0.80,
     cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
     rc:{ US:8500,  CA:7800,  EU:6300,  UK:6700,  AU:8100  },
     desc:'School bus routes and transit — seasonal schedules, tight stop density, and strict regulatory standards; among the lowest incident rates in fleet.',
-    src:'NHTSA school bus safety data; BLS transit JOLTS; NAPT workforce surveys; BITRE (AU)'
+    src:'NHTSA; BLS transit JOLTS; NAPT; School Bus Ontario (CA); Zemo Partnership (UK); ERSO (EU); Bus Industry Confederation (AU)'
   },
   'Specialty Trades': {
-    miles:26000, mpg:18, ir:0.12, tr:0.28, gas:0.60, dsl:0.30,
+    miles:{ US:26000, CA:21700, EU:18600, UK:15500, AU:21700 },
+    mpg:18,
+    ir:{ US:0.12, CA:0.18, EU:0.16, UK:0.09, AU:0.13 },
+    tr:{ US:0.28, CA:0.28, EU:0.18, UK:0.30, AU:0.15 },
+    gas:0.60, dsl:0.30,
     cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
     rc:{ US:9500,  CA:8700,  EU:7000,  UK:7500,  AU:9100  },
     desc:'Electricians, plumbers, HVAC, and mechanical contractors — cargo vans and pickups dispatched across residential and commercial job sites.',
-    src:'NSC commercial fleet; BLS construction trades; ACHR News workforce surveys; HSE (UK)'
+    src:'NSC; BLS construction trades; DfT van statistics (UK); Platform for Electromobility/T&E (EU); EURES 2024 (EU); NRCan (CA); SWA (AU)'
   },
   'Property Maintenance': {
-    miles:18000, mpg:16, ir:0.10, tr:0.42, gas:0.65, dsl:0.25,
+    miles:{ US:18000, CA:15500, EU:13700, UK:12000, AU:15500 },
+    mpg:16,
+    ir:{ US:0.10, CA:0.18, EU:0.14, UK:0.09, AU:0.10 },
+    tr:{ US:0.42, CA:0.36, EU:0.22, UK:0.35, AU:0.18 },
+    gas:0.65, dsl:0.25,
     cc:{ US:48000, CA:38000, EU:31000, UK:34000, AU:37000 },
     rc:{ US:7000,  CA:6400,  EU:5200,  UK:5600,  AU:6700  },
     desc:'Landscaping, janitorial, pest control, and facility services — light trucks and vans covering tight urban and suburban territory.',
-    src:'NSC Injury Facts; BLS building/grounds maintenance; SHRM service sector turnover; SWA (AU)'
+    src:'NSC Injury Facts; BLS building/grounds maintenance; SHRM; Eurofound EU 2022 (EU); CIPD (UK); Lytx (CA); ABS Admin & Support Services (AU)'
   },
   'Professional Services': {
-    miles:22000, mpg:28, ir:0.08, tr:0.22, gas:0.52, dsl:0.12,
+    miles:{ US:22000, CA:18600, EU:18600, UK:18000, AU:21700 },
+    mpg:28,
+    ir:{ US:0.08, CA:0.12, EU:0.10, UK:0.08, AU:0.08 },
+    tr:{ US:0.22, CA:0.20, EU:0.19, UK:0.30, AU:0.12 },
+    gas:0.52, dsl:0.12,
     cc:{ US:45000, CA:36000, EU:29000, UK:32000, AU:35000 },
     rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
     desc:'Insurance adjusters, field consultants, sales representatives — predominantly passenger cars and SUVs with predictable urban/suburban routing.',
-    src:'NSC personal vehicle crash costs; BLS professional JOLTS; DOE/EPA fuel economy; DfT (UK)'
+    src:'NSC personal vehicle crash costs; BLS professional JOLTS; Platform for Electromobility EU; EMCA 2023 (EU); DfT NTS (UK); ABS Job Mobility (AU)'
   },
   'Construction': {
-    miles:20000, mpg:8, ir:0.14, tr:0.32, gas:0.10, dsl:0.85,
+    miles:{ US:20000, CA:18600, EU:17400, UK:15500, AU:21700 },
+    mpg:8,
+    ir:{ US:0.14, CA:0.20, EU:0.25, UK:0.11, AU:0.13 },
+    tr:{ US:0.32, CA:0.30, EU:0.20, UK:0.35, AU:0.21 },
+    gas:0.10, dsl:0.85,
     cc:{ US:95000, CA:76000, EU:62000, UK:67000, AU:74000 },
     rc:{ US:12500, CA:11500, EU:9200,  UK:9900,  AU:11900 },
     desc:'Material hauling, equipment transport, and site support — heavy-duty Class 5–8 trucks operating in high-risk construction zone environments.',
-    src:'FMCSA; CPWR construction safety data; ATRI trucking costs; ETSC (EU); SWA (AU)'
+    src:'FMCSA; CPWR; ATRI; Eurostat ESAW NACE F (EU); CEDEFOP 2023 (EU); BuildForce Canada; DfT van statistics (UK); ScaleSuite (AU)'
   },
   'Utilities': {
-    miles:20000, mpg:12, ir:0.10, tr:0.18, gas:0.25, dsl:0.67,
+    miles:{ US:20000, CA:18600, EU:15500, UK:18000, AU:17100 },
+    mpg:12,
+    ir:{ US:0.10, CA:0.17, EU:0.18, UK:0.10, AU:0.09 },
+    tr:{ US:0.18, CA:0.08, EU:0.12, UK:0.27, AU:0.10 },
+    gas:0.25, dsl:0.67,
     cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
     rc:{ US:12000, CA:11000, EU:8900,  UK:9500,  AU:11500 },
     desc:'Electric, gas, water, and telecom field crews — service trucks with aerial lifts and equipment pods responding to faults and planned maintenance.',
-    src:'NSC commercial vehicle data; EEI utility workforce survey; SHRM; HSE (UK)'
+    src:'NSC; EEI utility workforce survey; SHRM; CIPD (UK); Eurostat ESAW NACE E (EU); Mercer Canada; ABS Job Mobility (AU)'
   },
   'Oil & Gas': {
-    miles:38000, mpg:14, ir:0.16, tr:0.42, gas:0.28, dsl:0.67,
+    miles:{ US:38000, CA:34200, EU:21700, UK:20000, AU:21700 },
+    mpg:14,
+    ir:{ US:0.16, CA:0.25, EU:0.22, UK:0.10, AU:0.12 },
+    tr:{ US:0.42, CA:0.35, EU:0.15, UK:0.27, AU:0.14 },
+    gas:0.28, dsl:0.67,
     cc:{ US:85000, CA:68000, EU:55000, UK:60000, AU:66000 },
     rc:{ US:14000, CA:12900, EU:10300, UK:11100, AU:13400 },
     desc:'Oilfield services, pipeline inspection, and exploration support — high mileage across remote terrain with fatigue and adverse-road risk.',
-    src:'FMCSA oilfield transport data; IADC HSE reports; BLS extraction JOLTS; SWA (AU)'
+    src:'FMCSA; IADC HSE reports; BLS extraction JOLTS; CAPP (CA); Eurostat ESAW NACE B (EU); Silverstone Recruitment (AU)'
   },
   'Transportation & Logistics': {
-    miles:55000, mpg:7, ir:0.12, tr:0.58, gas:0.10, dsl:0.83,
+    miles:{ US:55000, CA:74600, EU:68400, UK:75000, AU:49300 },
+    mpg:7,
+    ir:{ US:0.12, CA:0.09, EU:0.35, UK:0.10, AU:0.14 },
+    tr:{ US:0.58, CA:0.60, EU:0.18, UK:0.30, AU:0.22 },
+    gas:0.10, dsl:0.83,
     cc:{ US:125000, CA:100000, EU:82000, UK:88000, AU:97000 },
     rc:{ US:15000,  CA:13800,  EU:11000, UK:11900, AU:14300 },
     desc:'Regional and long-haul freight, dedicated fleet delivery — Class 7–8 trucks with high annual mileage and industry-leading turnover rates.',
-    src:'ATA Driver Shortage Report 2023; ATRI 2023 (6.4 MPG avg); FMCSA; ETSC (EU); BITRE (AU)'
+    src:'ATA; ATRI 2023; FMCSA; ERSO Facts & Figures 2023 (EU); IRU Truck Driver Barometer 2024 (EU); Trucking HR Canada; DfT Road Freight Statistics (UK); ABS SMVU 2020 (AU)'
   },
   'Other': {
-    miles:20000, mpg:18, ir:0.10, tr:0.25, gas:0.52, dsl:0.30,
+    miles:{ US:20000, CA:12400, EU:12400, UK:15000, AU:15500 },
+    mpg:18,
+    ir:{ US:0.10, CA:0.10, EU:0.12, UK:0.09, AU:0.10 },
+    tr:{ US:0.25, CA:0.15, EU:0.14, UK:0.20, AU:0.12 },
+    gas:0.52, dsl:0.30,
     cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
     rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
     desc:'Mixed or non-classified fleet — applies industry-average benchmarks across fuel type, mileage, collision risk, and driver turnover.',
-    src:'NSC; BLS all-industry JOLTS; SHRM average replacement cost study'
+    src:'NSC; BLS all-industry JOLTS; SHRM; regional government and industry survey averages'
   }
 };
 const FLEET_NAMES = Object.keys(FD);
@@ -902,11 +1001,12 @@ function calc() {
   const gp_pg = S.gp * reg.volFactor;
   const dp_pg = S.dp * reg.volFactor;
   const blended = S.gas * gp_pg + S.dsl * dp_pg;
-  const fuel = S.drivers * (f.miles / f.mpg) * blended * S.fi;
+  const miles = f.miles[reg.key];
+  const fuel = S.drivers * (miles / f.mpg) * blended * S.fi;
   const cc_local = f.cc[reg.key] * reg.rate;
   const rc_local = f.rc[reg.key] * reg.rate;
-  const coll = S.drivers * f.ir * cc_local * S.cr;
-  const ret  = S.drivers * f.tr * S.ri * 0.5 * rc_local;
+  const coll = S.drivers * f.ir[reg.key] * cc_local * S.cr;
+  const ret  = S.drivers * f.tr[reg.key] * S.ri * 0.5 * rc_local;
   const cost = S.drivers * 15 * 12 * reg.rate;
   const gross = fuel + coll + ret;
   const net   = gross - cost;
@@ -979,7 +1079,7 @@ function onRegion(regionName) {
   const currNote = reg.code === 'USD'
     ? 'All dollar values in USD.'
     : `All monetary values shown in ${reg.code} (${reg.sym}). Collision and retention benchmarks sourced in USD and converted at approximate market rates (1 USD = ${reg.rate} ${reg.code}).`;
-  el('footer-disclaimer').lastChild.textContent = ' ' + currNote;
+  el('footer-disclaimer').textContent = ' ' + currNote;
   renderMethTable();
   render();
 }
@@ -1130,9 +1230,10 @@ function renderMethTable() {
   FLEET_NAMES.forEach(name => {
     const f = FD[name];
     const ev = Math.max(0, 100 - Math.round(f.gas*100) - Math.round(f.dsl*100));
+    const fmiles = f.miles[reg.key];
     const dist = reg.distFactor === 1
-      ? f.miles.toLocaleString()
-      : Math.round(f.miles * reg.distFactor).toLocaleString();
+      ? fmiles.toLocaleString()
+      : Math.round(fmiles * reg.distFactor).toLocaleString();
     const eff = reg.effLabel === 'MPG'
       ? f.mpg
       : (235.214 / f.mpg).toFixed(1);
@@ -1145,8 +1246,8 @@ function renderMethTable() {
       <td class="num">${dist}</td>
       <td class="num">${eff}</td>
       <td class="num">${reg.sym}${cc_local}</td>
-      <td class="num">${Math.round(f.ir*100)}%</td>
-      <td class="num">${Math.round(f.tr*100)}%</td>
+      <td class="num">${Math.round(f.ir[reg.key]*100)}%</td>
+      <td class="num">${Math.round(f.tr[reg.key]*100)}%</td>
       <td class="num">${reg.sym}${rc_local}</td>
       <td class="num">${Math.round(f.gas*100)}%</td>
       <td class="num">${Math.round(f.dsl*100)}%</td>

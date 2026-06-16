@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleet ROI Calculator | Geotab Vitality</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 10px; }
+
+/* ── Design tokens — aligned with geotab.com routing calc ──────────── */
+:root {
+  --blue:         #0059B2;
+  --blue-hover:   #004A99;
+  --blue-light:   #EBF5FF;
+  --navy:         #25477B;
+  --navy-dark:    #1E2E40;
+  --navy-deep:    #0B2032;
+  --text-primary: #25477B;
+  --text-body:    #3C5164;
+  --text-muted:   #66788C;
+  --text-light:   #98ADBD;
+  --border:       #D1D6DD;
+  --border-mid:   #C0CCD8;
+  --bg-light:     #EFF2F7;
+  --bg-white:     #FFFFFF;
+  --amber:        #FFFDE7;
+  --green:        #2E7D32;
+  --green-light:  #E8F5E9;
+  --green-bright: #43A047;
+  --red:          #d32f2f;
+  --radius:       0.4rem;
+  --shadow-sm:    0 1px 3px rgba(11,32,50,0.08);
+  --shadow-md:    0 4px 14px rgba(11,32,50,0.13);
+}
+
+body {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.6rem;
+  color: var(--text-body);
+  background: var(--bg-white);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 { font-size: 4.8rem; font-weight: 700; line-height: 1.1; color: var(--text-primary); }
+h2 { font-size: 3.2rem; font-weight: 700; line-height: 1.2; color: var(--text-primary); }
+h3 { font-size: 2.4rem; font-weight: 700; line-height: 1.3; color: var(--text-primary); }
+h4 { font-size: 2rem;   font-weight: 700; color: var(--text-primary); }
+p  { font-size: 1.6rem; line-height: 1.6; }
+@media (max-width: 960px) { h1 { font-size: 3.2rem; } h2 { font-size: 2.4rem; } }
+
+/* ── Buttons ────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: Roboto, sans-serif; font-size: 1.5rem; font-weight: 500;
+  letter-spacing: 0.02em; padding: 1.2rem 2.8rem; border: none;
+  cursor: pointer; text-decoration: none; border-radius: var(--radius);
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s; white-space: nowrap;
+}
+.btn-contained { background: var(--blue); color: #fff; border: 1px solid var(--blue); }
+.btn-contained:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
+.btn-outlined  { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+.btn-outlined:hover { background: #fff; border-color: var(--blue-hover); color: var(--blue-hover); }
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+.site-header {
+  background: #fff; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 4px rgba(11,32,50,0.08);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 6.4rem; padding: 0 3.2rem; max-width: 1400px; margin: 0 auto;
+}
+.logo { display: flex; align-items: center; gap: 1.2rem; text-decoration: none; }
+.logo-divider { width: 1px; height: 2rem; background: var(--border-mid); }
+.logo-product { font-size: 1.5rem; font-weight: 500; color: var(--blue); letter-spacing: 0.02em; }
+.header-actions { display: flex; align-items: center; gap: 1.6rem; }
+.header-link { font-size: 1.4rem; color: var(--text-body); text-decoration: none; font-weight: 400; }
+.header-link:hover { color: var(--blue); }
+
+/* ── Hero ───────────────────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(rgba(1,23,41,0.88), rgba(1,23,41,0.88)),
+              linear-gradient(135deg, #0B2032 0%, #25477B 100%);
+  padding: 5.6rem 3.2rem 4.8rem;
+}
+.hero-inner { max-width: 1400px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 1.2rem; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--blue); margin-bottom: 1.4rem;
+}
+.hero h1 { font-size: 4.2rem; font-weight: 700; color: #fff; max-width: 72rem; margin-bottom: 1.6rem; line-height: 1.1; }
+.hero-sub { font-size: 1.8rem; color: rgba(255,255,255,0.75); max-width: 60rem; font-weight: 400; line-height: 1.5; }
+.hero-disclaimer { font-size: 1.1rem; color: rgba(255,255,255,0.38); margin-top: 2rem; }
+@media (max-width: 960px) { .hero h1 { font-size: 3rem; } .hero-sub { font-size: 1.6rem; } }
+
+/* ── Main calculator section ─────────────────────────────────────────── */
+.calc-section { background: var(--bg-light); padding: 3.2rem 3.2rem; }
+.calc-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 400px; gap: 2.4rem; align-items: start;
+}
+@media (max-width: 1100px) { .calc-inner { grid-template-columns: 1fr 360px; } }
+@media (max-width: 900px)  { .calc-inner { grid-template-columns: 1fr; } }
+
+/* ── Cards ──────────────────────────────────────────────────────────── */
+.card {
+  background: #fff;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(0,89,178,0.15);
+  box-shadow: var(--shadow-sm);
+  padding: 1.8rem 2.2rem;
+}
+.card + .card { margin-top: 1.2rem; }
+
+.card-label {
+  font-size: 1.1rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--blue);
+  padding-bottom: 1.2rem; border-bottom: 2px solid var(--bg-light); margin-bottom: 1.6rem;
+}
+.card-sublabel {
+  font-size: 1rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem;
+}
+.sect-divider { border: none; border-top: 1px solid var(--bg-light); margin: 1.4rem 0; }
+
+/* ── Region card ────────────────────────────────────────────────────── */
+.region-card { padding: 1.2rem 1.6rem; }
+.region-row { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+.region-label {
+  font-size: 1rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted); white-space: nowrap;
+}
+.region-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.region-tab {
+  font-family: Roboto, sans-serif; font-size: 1.25rem; font-weight: 500;
+  padding: 0.55rem 1.2rem; border: 1px solid var(--border-mid);
+  background: var(--bg-light); color: var(--text-body);
+  cursor: pointer; transition: all 0.15s; border-radius: var(--radius); line-height: 1;
+}
+.region-tab:hover  { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+.region-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* ── Form inputs ────────────────────────────────────────────────────── */
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field-label { font-size: 1.3rem; font-weight: 500; color: var(--text-body); }
+.field-hint  { font-size: 1.05rem; color: var(--text-muted); }
+
+.mui-input { position: relative; }
+.mui-input input, .mui-input select {
+  width: 100%; height: 4.8rem; padding: 0 1.4rem;
+  border: 1px solid var(--border-mid); font-family: Roboto, sans-serif;
+  font-size: 1.5rem; color: var(--text-primary); background: #fff;
+  outline: none; transition: border-color 0.15s; appearance: none;
+  border-radius: var(--radius);
+}
+.mui-input input[type="number"] { background: var(--amber); }
+.mui-input input:focus, .mui-input select:focus {
+  border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0,89,178,0.14);
+}
+.mui-input.prefix input { padding-left: 3.2rem; }
+.prefix-sym, .suffix-sym {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 1.3rem; font-weight: 500; color: var(--text-muted); pointer-events: none;
+}
+.prefix-sym { left: 1.2rem; }
+.suffix-sym { right: 1.2rem; }
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%);
+  font-size: 1.1rem; color: var(--text-muted); pointer-events: none;
+}
+.fleet-desc { font-size: 1.15rem; color: var(--text-muted); font-style: italic; margin-top: 0.6rem; line-height: 1.5; }
+
+/* Row layouts */
+.two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.4rem; }
+@media (max-width: 700px) {
+  .two-col   { grid-template-columns: 1fr; }
+  .three-col { grid-template-columns: 1fr; }
+}
+
+/* ── Fleet composition sliders ──────────────────────────────────────── */
+.comp-section { display: flex; flex-direction: column; gap: 1.6rem; }
+.comp-row { display: flex; flex-direction: column; gap: 0.5rem; }
+.comp-header { display: flex; justify-content: space-between; align-items: center; }
+.comp-name { font-size: 1.35rem; font-weight: 500; color: var(--text-body); display: flex; align-items: center; gap: 0.7rem; }
+.comp-dot { width: 1rem; height: 1rem; border-radius: 50%; flex-shrink: 0; }
+.comp-pct { font-size: 1.7rem; font-weight: 700; color: var(--text-primary); min-width: 4.2rem; text-align: right; }
+.comp-row.ev .comp-pct { color: var(--green); }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 4px;
+  background: var(--bg-light); border-radius: var(--radius); outline: none; cursor: pointer;
+  border: none; margin: 0.3rem 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 1.8rem; height: 1.8rem;
+  background: var(--blue); border-radius: 50%; border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.22); transition: transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.18); }
+.comp-row.ev input[type="range"]::-webkit-slider-thumb { background: var(--green-bright); }
+
+.mix-bar { height: 5px; background: var(--bg-light); display: flex; overflow: hidden; margin-top: 0.2rem; border-radius: var(--radius); }
+.mix-bar .s-gas    { background: var(--blue);        transition: width 0.25s; }
+.mix-bar .s-diesel { background: var(--navy);        transition: width 0.25s; }
+.mix-bar .s-ev     { background: var(--green-bright); transition: width 0.25s; }
+
+.total-pill {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.6rem 1rem; font-size: 1.1rem; font-weight: 600;
+  margin-top: 0.6rem; border-radius: var(--radius); transition: all 0.2s;
+}
+.total-pill.valid   { background: var(--green-light); color: var(--green); }
+.total-pill.invalid { background: #FFEBEE; color: var(--red); }
+
+/* ── Fleet composition — count inputs ───────────────────────────────── */
+.comp-right { display: flex; align-items: center; gap: 0.6rem; }
+.comp-count {
+  width: 6.4rem; height: 3.2rem; padding: 0 0.5rem;
+  border: 1px solid var(--border-mid); background: var(--amber);
+  font-family: Roboto, sans-serif; font-size: 1.3rem; font-weight: 600;
+  color: var(--text-primary); text-align: center; outline: none;
+  border-radius: var(--radius); appearance: none;
+}
+.comp-count:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0,89,178,0.14); }
+.comp-count-sep { font-size: 1.1rem; color: var(--text-light); }
+.comp-count-lbl { font-size: 1.1rem; color: var(--text-muted); white-space: nowrap; min-width: 2.4rem; }
+
+/* ── Improvement assumptions — 3-col compact ────────────────────────── */
+.imp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.4rem; }
+.imp-item { display: flex; flex-direction: column; gap: 0.5rem; }
+.imp-label { font-size: 1.2rem; font-weight: 600; color: var(--text-body); }
+.imp-sub   { font-size: 1rem; color: var(--text-muted); line-height: 1.35; min-height: 3.6rem; }
+.adv-input-wrap { position: relative; }
+.adv-input-wrap input {
+  width: 100%; height: 4.8rem; padding: 0 2.6rem 0 1rem;
+  border: 1px solid var(--border-mid); background: var(--amber);
+  font-family: Roboto, sans-serif; font-size: 2rem; font-weight: 700;
+  color: var(--text-primary); text-align: center; outline: none;
+  border-radius: var(--radius); appearance: none;
+}
+.adv-input-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0,89,178,0.14); }
+.adv-pct {
+  position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%);
+  font-size: 1.3rem; color: var(--text-muted); pointer-events: none;
+}
+@media (max-width: 640px) { .imp-grid { grid-template-columns: 1fr; } }
+
+/* ── Mode toggle (dark panel version — lives in results-top) ─────────── */
+.mode-in-results { display: flex; justify-content: center; margin-bottom: 1.4rem; }
+.mode-switch-dark { display: inline-flex; border: 1px solid rgba(255,255,255,0.35); border-radius: var(--radius); overflow: hidden; }
+.mode-switch-dark button {
+  font-family: Roboto, sans-serif; font-size: 1.15rem; font-weight: 500;
+  padding: 0.45rem 1.3rem; border: none; background: transparent;
+  color: rgba(255,255,255,0.58); cursor: pointer; transition: all 0.15s;
+}
+.mode-switch-dark button.active { background: rgba(255,255,255,0.2); color: #fff; }
+.mode-switch-dark button:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.08); }
+
+/* ── Results panel ───────────────────────────────────────────────────── */
+.results-panel {
+  background: #fff;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(0,89,178,0.15);
+  border-radius: 0.8rem;
+  position: sticky; top: 8rem; overflow: hidden;
+}
+.results-top {
+  background: var(--blue);
+  padding: 2.4rem 2.4rem 2rem;
+  text-align: center;
+}
+.results-eyebrow {
+  font-size: 1.1rem; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 1.2rem;
+}
+.roi-figure {
+  font-size: 7.2rem; font-weight: 700; line-height: 1; color: #43D17A;
+  letter-spacing: -0.02em; font-family: Roboto, sans-serif; transition: opacity 0.2s;
+}
+.roi-unit  { font-size: 2.6rem; color: rgba(255,255,255,0.55); margin-left: 0.2rem; }
+.payback-txt { font-size: 1.25rem; color: rgba(255,255,255,0.58); margin-top: 0.8rem; }
+.payback-val { font-size: 1.7rem; font-weight: 700; color: #fff; }
+
+.results-body { padding: 2rem 2.2rem; }
+
+.net-row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--green-light); border: 1px solid #C8E6C9;
+  padding: 1.2rem 1.4rem; margin-bottom: 2rem; border-radius: var(--radius);
+}
+.net-lbl { font-size: 1.25rem; font-weight: 700; color: var(--green); }
+.net-val { font-size: 2.2rem; font-weight: 700; color: var(--green); }
+
+.section-hd {
+  font-size: 1rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem;
+}
+.sav-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.9rem 0; border-bottom: 1px solid var(--bg-light);
+}
+.sav-row:last-child { border-bottom: none; }
+.sav-name { display: flex; align-items: center; gap: 0.7rem; font-size: 1.25rem; color: var(--text-body); }
+.sav-dot  { width: 0.8rem; height: 0.8rem; border-radius: 50%; flex-shrink: 0; }
+.sav-val  { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+
+.results-divider { border: none; border-top: 2px solid var(--bg-light); margin: 1.4rem 0; }
+.total-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; }
+.total-lbl { font-size: 1.25rem; font-weight: 600; color: var(--text-body); }
+.total-val { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+.cost-row  { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; }
+.cost-lbl  { font-size: 1.15rem; color: var(--text-muted); }
+.cost-val  { font-size: 1.25rem; color: var(--text-muted); }
+
+.results-footer {
+  font-size: 0.95rem; color: var(--border-mid); text-align: center;
+  padding: 1rem 1.6rem; border-top: 1px solid var(--bg-light); line-height: 1.5;
+}
+
+/* ── CTA section ─────────────────────────────────────────────────────── */
+.cta-section { background: var(--blue); padding: 5.6rem 3.2rem; text-align: center; }
+.cta-inner { max-width: 720px; margin: 0 auto; }
+.cta-eyebrow {
+  font-size: 1.2rem; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 1.4rem;
+}
+.cta-section h2 { font-size: 3.4rem; font-weight: 700; color: #fff; margin-bottom: 1.4rem; line-height: 1.2; }
+.cta-section p  { font-size: 1.8rem; color: rgba(255,255,255,0.8); margin-bottom: 3rem; line-height: 1.55; }
+.cta-buttons { display: flex; gap: 1.4rem; justify-content: center; flex-wrap: wrap; }
+.btn-cta-primary {
+  background: #fff; color: var(--blue); border: 1px solid #fff;
+  font-size: 1.5rem; font-weight: 700; padding: 1.3rem 3rem;
+  text-decoration: none; font-family: Roboto, sans-serif; cursor: pointer;
+  border-radius: var(--radius); transition: background 0.2s; display: inline-block;
+}
+.btn-cta-primary:hover { background: #EBF5FF; }
+.btn-cta-outline {
+  background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.6);
+  font-size: 1.5rem; font-weight: 500; padding: 1.3rem 3rem;
+  text-decoration: none; font-family: Roboto, sans-serif; cursor: pointer;
+  border-radius: var(--radius); transition: border-color 0.2s, background 0.2s; display: inline-block;
+}
+.btn-cta-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+
+/* ── Methodology ─────────────────────────────────────────────────────── */
+.meth-section { background: var(--bg-white); padding: 5.6rem 3.2rem; border-top: 1px solid var(--border); }
+.meth-inner   { max-width: 1400px; margin: 0 auto; }
+.meth-hd  { margin-bottom: 0.8rem; }
+.meth-sub { font-size: 1.5rem; color: var(--text-muted); max-width: 72rem; margin-bottom: 3.6rem; }
+
+.acc-item { border: 1px solid var(--border); margin-bottom: 1rem; border-radius: var(--radius); overflow: hidden; }
+.acc-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.6rem 2.2rem; cursor: pointer; background: var(--bg-light);
+  user-select: none; transition: background 0.15s;
+}
+.acc-hdr:hover { background: #E6ECF3; }
+.acc-hdr.open  { background: var(--blue); }
+.acc-title  { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); transition: color 0.15s; }
+.acc-hdr.open .acc-title { color: #fff; }
+.acc-chevron { font-size: 1.2rem; color: var(--text-muted); transition: transform 0.2s, color 0.15s; }
+.acc-hdr.open .acc-chevron { transform: rotate(180deg); color: #fff; }
+.acc-body { overflow: hidden; max-height: 0; transition: max-height 0.35s ease; }
+.acc-body.open { max-height: 6000px; }
+.acc-inner { padding: 2.2rem; overflow-x: auto; }
+
+.meth-tbl { width: 100%; border-collapse: collapse; font-size: 1.2rem; min-width: 900px; }
+.meth-tbl th {
+  background: var(--navy); color: #fff; padding: 1rem 1.2rem;
+  text-align: left; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.03em; white-space: nowrap;
+}
+.meth-tbl td { padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); color: var(--text-body); vertical-align: top; line-height: 1.4; }
+.meth-tbl tr:nth-child(even) td { background: var(--bg-light); }
+.meth-tbl tr:last-child td { border-bottom: none; }
+.meth-tbl .fn  { font-weight: 700; color: var(--navy); white-space: nowrap; }
+.meth-tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
+.meth-tbl .uc  { font-size: 1.1rem; color: var(--text-muted); font-style: italic; max-width: 18rem; }
+.tbl-note { font-size: 1.1rem; color: var(--text-muted); margin-top: 1.2rem; line-height: 1.5; }
+
+.formula-card { background: var(--bg-light); border-left: 4px solid var(--blue); padding: 1.4rem 1.8rem; margin-bottom: 1.4rem; border-radius: var(--radius); }
+.formula-card:last-child { margin-bottom: 0; }
+.formula-name { font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem; }
+.formula-expr { font-family: 'Courier New', monospace; font-size: 1.2rem; color: var(--blue); margin-bottom: 0.5rem; }
+.formula-note { font-size: 1.2rem; color: var(--text-muted); line-height: 1.5; }
+
+.src-list { list-style: none; }
+.src-list li { display: flex; gap: 1.6rem; padding: 1rem 0; border-bottom: 1px solid var(--bg-light); font-size: 1.2rem; }
+.src-list li:last-child { border-bottom: none; }
+.src-region-hdr { font-size: 1.3rem; font-weight: 700; color: var(--navy); margin: 2rem 0 0.6rem; letter-spacing: 0.04em; }
+.src-region-hdr:first-child { margin-top: 0; }
+.src-org  { font-weight: 700; color: var(--navy); min-width: 22rem; flex-shrink: 0; }
+.src-org a { color: var(--blue); text-decoration: none; }
+.src-org a:hover { text-decoration: underline; }
+.src-desc { color: var(--text-muted); line-height: 1.5; }
+
+.cs-link {
+  font-size: 1.3rem; font-weight: 500; color: var(--blue); text-decoration: none;
+  padding: 0.6rem 1.2rem; border: 1px solid var(--blue);
+  border-radius: var(--radius); transition: background 0.15s; display: inline-block;
+}
+.cs-link:hover { background: var(--blue-light); }
+
+/* ── Footer ─────────────────────────────────────────────────────────── */
+footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,255,255,0.55); }
+.footer-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 6rem;
+}
+@media (max-width: 800px) { .footer-inner { grid-template-columns: 1fr; gap: 4rem; } }
+.footer-brand .wm { font-size: 2rem; font-weight: 700; color: #fff; }
+.footer-brand .wm span { color: var(--blue); }
+.footer-brand p { font-size: 1.3rem; margin-top: 1.2rem; line-height: 1.65; max-width: 34rem; }
+.legal-block h5 {
+  font-size: 1.1rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 1.2rem;
+}
+.legal-block p { font-size: 1.1rem; line-height: 1.75; }
+.footer-bottom {
+  max-width: 1400px; margin: 3rem auto 0; padding-top: 2.2rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex; justify-content: space-between; flex-wrap: wrap;
+  gap: 0.8rem; font-size: 1.1rem; color: rgba(255,255,255,0.3);
+}
+</style>
+</head>
+<body>
+
+<!-- ─── Hero ────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Driver Safety &amp; Performance</div>
+    <h1>Estimate Your Fleet's Return on<br>Geotab Vitality</h1>
+    <p class="hero-sub">Adjust the inputs to model annual savings across fuel efficiency, collision risk reduction, and driver retention — by fleet type, region, and size.</p>
+    <p class="hero-disclaimer">Illustrative estimates only. Actual results will vary. See methodology below for all assumptions and sources.</p>
+  </div>
+</section>
+
+<!-- ─── Calculator ──────────────────────────────────────────────────── -->
+<section class="calc-section">
+  <div class="calc-inner">
+
+    <!-- ── Left: inputs ─────────────────────────────────────────────── -->
+    <div>
+
+      <!-- a) Region -->
+      <div class="card region-card">
+        <div class="region-row">
+          <span class="region-label">Region</span>
+          <div class="region-tabs">
+            <button class="region-tab active" data-region="United States">🇺🇸 United States</button>
+            <button class="region-tab" data-region="Canada">🇨🇦 Canada</button>
+            <button class="region-tab" data-region="European Union">🇪🇺 EU</button>
+            <button class="region-tab" data-region="United Kingdom">🇬🇧 UK</button>
+            <button class="region-tab" data-region="Australia">🇦🇺 Australia</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- b) Your Fleet (segment + drivers + composition) -->
+      <div class="card">
+        <div class="card-label">Your Fleet</div>
+
+        <div class="two-col" style="margin-bottom:1.4rem">
+          <div class="field">
+            <div class="field-label">Industry segment</div>
+            <div class="mui-input select-wrap">
+              <select id="fleet-type">
+                <option>Government</option>
+                <option>Public Works</option>
+                <option>Waste &amp; Recycling</option>
+                <option>Police &amp; First Responders</option>
+                <option>Student Transportation</option>
+                <option>Specialty Trades</option>
+                <option>Property Maintenance</option>
+                <option>Professional Services</option>
+                <option>Construction</option>
+                <option>Utilities</option>
+                <option>Oil &amp; Gas</option>
+                <option>Transportation &amp; Logistics</option>
+                <option selected>Other</option>
+              </select>
+            </div>
+            <div class="fleet-desc" id="fleet-desc"></div>
+          </div>
+          <div class="field">
+            <div class="field-label">Number of drivers</div>
+            <div class="mui-input">
+              <input type="number" id="drivers" value="50" min="1" max="50000" step="1">
+            </div>
+            <div class="field-hint">Enrolled in the program</div>
+          </div>
+        </div>
+
+        <div class="sect-divider"></div>
+        <div class="card-sublabel">Fleet Composition</div>
+
+        <div class="comp-section">
+
+          <div class="comp-row">
+            <div class="comp-header">
+              <div class="comp-name"><div class="comp-dot" style="background:var(--blue)"></div>Gas-powered</div>
+              <div class="comp-right">
+                <div class="comp-pct" id="gas-pct-d">—%</div>
+                <span class="comp-count-sep">·</span>
+                <input type="number" class="comp-count" id="gas-count" min="0" value="25">
+                <span class="comp-count-lbl">vehicles</span>
+              </div>
+            </div>
+            <input type="range" id="gas-sl" min="0" max="100" value="50">
+          </div>
+
+          <div class="comp-row">
+            <div class="comp-header">
+              <div class="comp-name"><div class="comp-dot" style="background:var(--navy)"></div>Diesel-powered</div>
+              <div class="comp-right">
+                <div class="comp-pct" id="diesel-pct-d">—%</div>
+                <span class="comp-count-sep">·</span>
+                <input type="number" class="comp-count" id="diesel-count" min="0" value="15">
+                <span class="comp-count-lbl">vehicles</span>
+              </div>
+            </div>
+            <input type="range" id="diesel-sl" min="0" max="100" value="30">
+          </div>
+
+          <div class="comp-row ev">
+            <div class="comp-header">
+              <div class="comp-name"><div class="comp-dot" style="background:var(--green-bright)"></div>Electric / Hybrid</div>
+              <div class="comp-right">
+                <div class="comp-pct" id="ev-pct-d">20%</div>
+                <span class="comp-count-sep">·</span>
+                <input type="number" class="comp-count" id="ev-count" min="0" value="10">
+                <span class="comp-count-lbl">vehicles</span>
+              </div>
+            </div>
+            <input type="range" id="ev-sl" min="0" max="100" value="20">
+            <div class="field-hint" style="margin-top:0.3rem">Excluded from fuel savings — collision &amp; retention savings apply to all vehicle types</div>
+          </div>
+
+          <div class="mix-bar">
+            <div class="s-gas"    id="bar-g" style="width:50%"></div>
+            <div class="s-diesel" id="bar-d" style="width:30%"></div>
+            <div class="s-ev"     id="bar-e" style="width:20%"></div>
+          </div>
+          <div class="total-pill valid" id="total-pill">
+            <span>Gas + Diesel + EV/Hybrid</span>
+            <span id="total-pct">= 100%</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- c) Cost Assumptions -->
+      <div class="card">
+        <div class="card-label">Cost Assumptions</div>
+        <div class="two-col">
+          <div class="field">
+            <div class="field-label" id="gas-price-label">Gas price ($/gal)</div>
+            <div class="mui-input prefix">
+              <span class="prefix-sym" id="gas-price-sym">$</span>
+              <input type="number" id="gas-price" value="3.40" min="0.50" max="15" step="0.01">
+            </div>
+            <div class="field-hint" id="gas-price-hint">US avg, Jun 2026 (EIA) — regular</div>
+          </div>
+          <div class="field">
+            <div class="field-label" id="diesel-price-label">Diesel price ($/gal)</div>
+            <div class="mui-input prefix">
+              <span class="prefix-sym" id="diesel-price-sym">$</span>
+              <input type="number" id="diesel-price" value="3.80" min="0.50" max="15" step="0.01">
+            </div>
+            <div class="field-hint" id="diesel-price-hint">US avg, Jun 2026 (EIA) — diesel</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- d) Improvement Assumptions — always open, 3-col -->
+      <div class="card">
+        <div class="card-label">Improvement Assumptions</div>
+        <div class="imp-grid">
+          <div class="imp-item">
+            <div class="imp-label">Fuel efficiency gain</div>
+            <div class="imp-sub">Range: 1–7%&thinsp;·&thinsp;FiberLight (Geotab Vitality): 7%&thinsp;·&thinsp;ATRI benchmark: 3–5%</div>
+            <div class="adv-input-wrap">
+              <input type="number" id="fuel-imp" value="5" min="0" step="0.5">
+              <span class="adv-pct">%</span>
+            </div>
+          </div>
+          <div class="imp-item">
+            <div class="imp-label">Collision reduction</div>
+            <div class="imp-sub">Range: 5–15%&thinsp;·&thinsp;Geotab Vitality PCR coaching data</div>
+            <div class="adv-input-wrap">
+              <input type="number" id="coll-red" value="10" min="0" step="1">
+              <span class="adv-pct">%</span>
+            </div>
+          </div>
+          <div class="imp-item">
+            <div class="imp-label">Driver retention gain</div>
+            <div class="imp-sub">Range: 5–20%&thinsp;·&thinsp;Geotab Vitality program data</div>
+            <div class="adv-input-wrap">
+              <input type="number" id="ret-imp" value="10" min="0" step="1">
+              <span class="adv-pct">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /inputs -->
+
+    <!-- ── Right: results ────────────────────────────────────────────── -->
+    <div>
+      <div class="results-panel">
+        <div class="results-top">
+          <div class="results-eyebrow">Estimated Annual ROI</div>
+          <div class="mode-in-results">
+            <div class="mode-switch-dark">
+              <button id="mode-std" onclick="setMode('standard')">Optimistic</button>
+              <button id="mode-con" onclick="setMode('conservative')">Conservative</button>
+            </div>
+          </div>
+          <div id="cons-indicator" style="display:none;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:0.4rem">(Conservative Estimate)</div>
+          <div>
+            <span class="roi-figure" id="roi-fig">—</span><span class="roi-unit">%</span>
+          </div>
+          <div class="payback-txt">
+            Payback in <span class="payback-val" id="payback-val">—</span>
+          </div>
+        </div>
+
+        <div class="results-body">
+          <div class="net-row">
+            <div class="net-lbl">Net Annual Savings</div>
+            <div class="net-val" id="net-val">$—</div>
+          </div>
+
+          <div class="section-hd">Savings breakdown</div>
+          <div class="sav-row">
+            <div class="sav-name"><div class="sav-dot" style="background:var(--blue)"></div>Fuel efficiency</div>
+            <div class="sav-val" id="fuel-val">$—</div>
+          </div>
+          <div class="sav-row">
+            <div class="sav-name"><div class="sav-dot" style="background:var(--navy)"></div>Collision risk reduction</div>
+            <div class="sav-val" id="coll-val">$—</div>
+          </div>
+          <div class="sav-row">
+            <div class="sav-name"><div class="sav-dot" style="background:var(--green-bright)"></div>Driver retention</div>
+            <div class="sav-val" id="ret-val">$—</div>
+          </div>
+
+          <div class="results-divider"></div>
+
+          <div class="total-row">
+            <div class="total-lbl">Gross annual savings</div>
+            <div class="total-val" id="gross-val">$—</div>
+          </div>
+          <div class="cost-row">
+            <div class="cost-lbl" id="prog-cost-lbl">Program cost ($15/driver/month)</div>
+            <div class="cost-val" id="cost-val">−$—</div>
+          </div>
+        </div>
+
+        <div class="results-footer">
+          Illustrative estimates only. Actual results will vary based on fleet conditions, driver adoption, and operating environment.
+          <span id="footer-disclaimer"></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── CTA ──────────────────────────────────────────────────────────── -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="cta-eyebrow">Ready to see real results?</div>
+    <h2>Get a detailed analysis tailored to your actual fleet data</h2>
+    <p>These are benchmark estimates. A Geotab Vitality specialist can model your specific fleet, operating profile, and historical safety data to show what's actually achievable.</p>
+    <div class="cta-buttons">
+      <a href="https://www.geotab.com/contact/" target="_blank" class="btn-cta-primary">Start a pilot program</a>
+      <a href="https://www.geotab.com/contact/" target="_blank" class="btn-cta-outline">Talk to an expert</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Methodology ───────────────────────────────────────────────────── -->
+<section class="meth-section">
+  <div class="meth-inner">
+    <h2 class="meth-hd">Methodology &amp; Assumptions</h2>
+    <p class="meth-sub">All figures are derived from published industry benchmarks and Geotab Vitality program data. The table and formulas below explain every number used in your estimate.</p>
+
+    <div class="acc-item">
+      <div class="acc-hdr" onclick="toggleAcc(this)">
+        <span class="acc-title">Industry Segment Baseline Assumptions</span>
+        <span class="acc-chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <table class="meth-tbl">
+            <thead><tr>
+              <th>Segment</th><th>Typical Operations</th>
+              <th class="num" id="meth-dist-hdr">Miles/Yr</th>
+              <th class="num" id="meth-eff-hdr">MPG</th>
+              <th class="num" id="meth-cc-hdr">Avg Collision Cost</th><th class="num">Incident Rate</th>
+              <th class="num">Turnover Rate</th><th class="num" id="meth-rc-hdr">Replace Cost</th>
+              <th class="num">Gas %</th><th class="num">Diesel %</th><th class="num">EV/Hybrid %</th>
+              <th>Sources</th>
+            </tr></thead>
+            <tbody id="meth-tbody"></tbody>
+          </table>
+          <p class="tbl-note">Incident Rate = at-fault commercial fleet incidents per driver/year. 50% unavoidable churn factor applied to retention savings (retirements, medical, relocation). Collision and replacement costs reflect regional differences in healthcare systems, legal liability regimes, and labor markets — not simply currency-converted from a single source. Sources: NSC/FMCSA/NHTSA (US), IBC/CASC (Canada), ETSC/Eurostat (EU), DfT/HSE (UK), BITRE/Safe Work Australia.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-hdr" onclick="toggleAcc(this)">
+        <span class="acc-title">Calculation Formulas</span>
+        <span class="acc-chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <div class="formula-card">
+            <div class="formula-name">Fuel Savings</div>
+            <div class="formula-expr">Drivers × (Miles ÷ MPG) × Blended fuel cost × Fuel Improvement %</div>
+            <div class="formula-note">Blended fuel cost = (Gas % × Gas price) + (Diesel % × Diesel price). EV/hybrid vehicles contribute $0 to blended fuel cost — naturally excluded. Fleet-type MPG and annual miles are defaults from the table above. For non-US regions, fuel prices are entered in local currency per litre and converted to per-gallon equivalent internally.</div>
+          </div>
+          <div class="formula-card">
+            <div class="formula-name">Collision Risk Savings</div>
+            <div class="formula-expr">Drivers × Incident Rate × Avg Collision Cost × Collision Reduction %</div>
+            <div class="formula-note">Incident rate and collision cost are segment defaults. All-in cost per at-fault incident includes vehicle repair, medical, liability, downtime, and claims administration. Applies to all vehicle types.</div>
+          </div>
+          <div class="formula-card">
+            <div class="formula-name">Driver Retention Savings</div>
+            <div class="formula-expr">Drivers × Turnover Rate × Retention Improvement % × 50% × Driver Replace Cost</div>
+            <div class="formula-note">50% unavoidable churn factor accounts for retirements, medical departures, and relocations that no program can prevent. Source: Geotab Vitality King Township case study methodology. Applies to all vehicle types.</div>
+          </div>
+          <div class="formula-card">
+            <div class="formula-name">Program Cost &amp; ROI</div>
+            <div class="formula-expr">Program Cost = Drivers × $15/month × 12 &nbsp;|&nbsp; ROI = (Gross − Cost) ÷ Cost × 100</div>
+            <div class="formula-note">Net Savings = Gross Savings − Program Cost. Payback = Program Cost ÷ (Gross − Cost) × 12 months. $15/driver/month converted to local currency at approximate market rates for non-USD regions.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-hdr" onclick="toggleAcc(this)">
+        <span class="acc-title">Data Sources &amp; Case Studies</span>
+        <span class="acc-chevron">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <div style="margin-bottom:2.4rem;padding-bottom:2rem;border-bottom:1px solid var(--border)">
+            <div style="font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:1.2rem;text-transform:uppercase;letter-spacing:0.08em">Geotab Vitality Case Studies</div>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap">
+              <a href="https://www.geotab.com/case-study/richfords/" target="_blank" class="cs-link">Richfords Fire &amp; Safety →</a>
+              <a href="https://www.geotab.com/case-study/fiberlight/" target="_blank" class="cs-link">FiberLight — 7% fuel reduction →</a>
+              <a href="https://www.geotab.com/case-study/king-township-geotab-vitality/" target="_blank" class="cs-link">King Township — 443% ROI →</a>
+              <a href="https://www.geotab.com/case-study/richards-building-supply/" target="_blank" class="cs-link">Richards Building Supply →</a>
+            </div>
+          </div>
+          <div class="src-region-hdr">🇺🇸 United States</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://injuryfacts.nsc.org/" target="_blank">NSC Injury Facts 2023</a></span><span class="src-desc">National Safety Council — commercial vehicle crash costs, injury severity, and fleet incident benchmarks</span></li>
+            <li><span class="src-org"><a href="https://www.fmcsa.dot.gov/safety/data-and-statistics" target="_blank">FMCSA Safety Data</a></span><span class="src-desc">Federal Motor Carrier Safety Administration — large truck/bus crash statistics and crash cost models</span></li>
+            <li><span class="src-org"><a href="https://truckingresearch.org/category/operational-costs/" target="_blank">ATRI Operational Costs 2023</a></span><span class="src-desc">American Transportation Research Institute — fuel economy (Class 8: 6.4 MPG avg), OTR mileage benchmarks</span></li>
+            <li><span class="src-org"><a href="https://www.trucking.org/news-insights/driver-shortage" target="_blank">ATA Driver Shortage Report 2023</a></span><span class="src-desc">American Trucking Associations — carrier turnover rates, driver replacement and training cost data</span></li>
+            <li><span class="src-org"><a href="https://www.bls.gov/jlt/" target="_blank">BLS JOLTS / Occupational Outlook</a></span><span class="src-desc">Bureau of Labor Statistics — occupation-specific turnover rates and wage data by industry sector</span></li>
+            <li><span class="src-org"><a href="https://www.eia.gov/petroleum/gasdiesel/" target="_blank">EIA Retail Fuel Prices</a></span><span class="src-desc">Energy Information Administration — US average fuel prices, updated Jun 2026</span></li>
+            <li><span class="src-org"><a href="https://www.shrm.org/topics-tools/research/cost-of-turnover" target="_blank">SHRM Recruitment Cost Study</a></span><span class="src-desc">Society for Human Resource Management — driver replacement cost methodology</span></li>
+            <li><span class="src-org">Industry-specific (US)</span><span class="src-desc">NWRA (waste &amp; recycling), IACP (police/emergency), NHTSA (student transport), APWA (public works), EEI (utilities), IADC (oil &amp; gas), CPWR (construction)</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇨🇦 Canada</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://oee.nrcan.gc.ca/corporate/statistics/neud/dpa/showTable.cfm?type=CP&sector=tran&juris=ca&rn=60&page=0" target="_blank">NRCan Truck Explanatory Variables 2023</a></span><span class="src-desc">Natural Resources Canada — annual km by truck weight class; medium truck average 22,900 km</span></li>
+            <li><span class="src-org"><a href="https://tc.canada.ca/en/road-transportation/statistics-data/commercial-vehicle-collisions/2021/commercial-vehicle-collisions-canada-2012-2021" target="_blank">Transport Canada — Commercial Vehicle Collisions 2021</a></span><span class="src-desc">Collision rates per 10,000 registered commercial vehicles; basis for per-driver rate derivation</span></li>
+            <li><span class="src-org"><a href="https://truckinghr.com/labour-market-information/" target="_blank">Trucking HR Canada LMI 2024</a></span><span class="src-desc">Long-haul driver turnover rates, vacancy data, and workforce projections</span></li>
+            <li><span class="src-org"><a href="https://www.canada.ca/en/treasury-board-secretariat/services/innovation/human-resources-statistics/demographic-snapshot-federal-public-service-2023.html" target="_blank">Treasury Board — Public Service Demographic Snapshot 2023</a></span><span class="src-desc">Federal government sector departure rates; basis for Government and Public Works turnover</span></li>
+            <li><span class="src-org"><a href="https://www.buildforce.ca/en/blog/reviewing-canadas-construction-sector-in-2024-part-5-building-a-strong-workforce/" target="_blank">BuildForce Canada 2024</a></span><span class="src-desc">Construction sector workforce retirement and attrition projections</span></li>
+            <li><span class="src-org"><a href="https://www.imercer.com/articleinsights/workforce-turnover-trends-canada" target="_blank">Mercer Canada 2025 Turnover Trends</a></span><span class="src-desc">National voluntary turnover average (10.2%) and sector breakdowns including utilities and professional services</span></li>
+            <li><span class="src-org"><a href="https://www.lytx.com/guide/annual-risk-and-collision-analysis" target="_blank">Lytx Annual Risk &amp; Collision Analysis</a></span><span class="src-desc">Commercial fleet incident rates by industry segment; relative risk ranking across sectors</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇪🇺 European Union</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Accidents_at_work_-_statistics_by_economic_activity" target="_blank">Eurostat ESAW 2023</a></span><span class="src-desc">European Statistics on Accidents at Work — non-fatal incidence rates per 100,000 workers by NACE economic sector; primary basis for EU incident rates</span></li>
+            <li><span class="src-org"><a href="https://road-safety.transport.ec.europa.eu/system/files/2023-02/ff_buses_hgv_20230213.pdf" target="_blank">ERSO Facts &amp; Figures — HGV/Buses 2023</a></span><span class="src-desc">European Road Safety Observatory — HGV annual km average 110,000 km; HGV involvement in EU road fatalities</span></li>
+            <li><span class="src-org"><a href="https://www.iru.org/intelligence/road-transport-intelligence/truck-driver-barometer-2024-europe" target="_blank">IRU Truck Driver Barometer 2024</a></span><span class="src-desc">International Road Transport Union — EU driver shortage, turnover crisis, aging workforce (avg age 47)</span></li>
+            <li><span class="src-org"><a href="https://www.transportenvironment.org/state-of-european-transport/state-of-transport-2025/fleets" target="_blank">Platform for Electromobility / T&amp;E 2025</a></span><span class="src-desc">EU corporate/fleet vehicles average 30,000 km/year; primary basis for professional services and specialty trades mileage</span></li>
+            <li><span class="src-org"><a href="https://www.cedefop.europa.eu/en/data-insights/drivers-and-vehicle-operators-skills-opportunities-and-challenges-2023-update" target="_blank">CEDEFOP 2023 — Drivers &amp; Vehicle Operators</a></span><span class="src-desc">EU skills outlook for transport occupations; construction and trades turnover benchmarks</span></li>
+            <li><span class="src-org"><a href="https://www.ela.europa.eu/en/publications/labour-shortages-and-surpluses-europe-2024" target="_blank">ELA Labour Shortages 2024</a></span><span class="src-desc">European Labour Authority — shortage occupations by sector across EU member states; basis for trades and construction turnover</span></li>
+            <li><span class="src-org"><a href="https://www.eurofound.europa.eu/en/publications/all/eu-road-freight-transport-sector-work-and-employment-conditions" target="_blank">Eurofound — EU Road Freight Transport Sector</a></span><span class="src-desc">Working conditions, employment structure, and churn in EU freight; basis for T&amp;L turnover</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇬🇧 United Kingdom</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/van-statistics-2019-to-2020" target="_blank">DfT Van Statistics 2019–20</a></span><span class="src-desc">Department for Transport — annual miles by van use type (local operations, tools/materials, national); primary basis for UK mileage by segment</span></li>
+            <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/road-freight-statistics-2024/domestic-road-freight-statistics-united-kingdom-2024" target="_blank">DfT Road Freight Statistics 2024</a></span><span class="src-desc">HGV annual mileage benchmarks; basis for UK T&amp;L segment (75,000 miles/year)</span></li>
+            <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/police-workforce-england-and-wales-31-march-2024/police-workforce-england-and-wales-31-march-2024" target="_blank">Home Office Police Workforce Statistics 2024</a></span><span class="src-desc">Police officer leaver rate (6.2%); basis for Police &amp; First Responders turnover</span></li>
+            <li><span class="src-org"><a href="https://www.hrdatahub.com/blog/employee-turnover-by-industry" target="_blank">CIPD / ONS APS — Employee Turnover by Industry 2022–23</a></span><span class="src-desc">Annual turnover rates by sector across UK industries; primary basis for all UK segment turnover rates</span></li>
+            <li><span class="src-org"><a href="https://www.drivingforbetterbusiness.com/articles/accident-frequency-rates/" target="_blank">Driving for Better Business — Accident Frequency Rates</a></span><span class="src-desc">UK fleet-wide commercial vehicle incident rate baseline: 0.09 collisions per driver/year (all sectors)</span></li>
+            <li><span class="src-org"><a href="https://www.hse.gov.uk/statistics/overview.htm" target="_blank">HSE Key Figures 2024/25</a></span><span class="src-desc">Health &amp; Safety Executive — non-fatal workplace injury rates by sector; basis for relative risk adjustments</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇦🇺 Australia</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://www.abs.gov.au/statistics/industry/tourism-and-transport/survey-motor-vehicle-use-australia/latest-release" target="_blank">ABS Survey of Motor Vehicle Use 2020</a></span><span class="src-desc">Annual km by vehicle type — articulated trucks 79,400 km/year; rigid trucks 21,100 km/year</span></li>
+            <li><span class="src-org"><a href="https://www.abs.gov.au/statistics/labour/jobs/job-mobility/latest-release" target="_blank">ABS Job Mobility Feb 2025</a></span><span class="src-desc">Employer-change rates by industry sector; primary basis for all AU segment turnover rates</span></li>
+            <li><span class="src-org"><a href="https://data.safeworkaustralia.gov.au/insights/key-whs-statistics-australia/2024" target="_blank">Safe Work Australia Key WHS Statistics 2024</a></span><span class="src-desc">Workplace injury incidence rates per million hours worked by ANZSIC industry; basis for AU relative risk by segment</span></li>
+            <li><span class="src-org"><a href="https://bic.asn.au/industry-stats/2020-bus-operations-stats/" target="_blank">Bus Industry Confederation — Bus Operations Stats 2020</a></span><span class="src-desc">Annual km for dedicated school services; basis for AU Student Transportation mileage (18,000 km/year)</span></li>
+            <li><span class="src-org"><a href="https://www.tac.vic.gov.au/road-safety/road-users/drivers/fleet-safety" target="_blank">TAC Victoria — Fleet Safety</a></span><span class="src-desc">Transport Accident Commission — 0.25 vehicle incidents per fleet vehicle per year (all company cars); AU fleet collision baseline</span></li>
+            <li><span class="src-org"><a href="https://www.scalesuite.com.au/resources/australian-employee-turnover-statistics-2026" target="_blank">ScaleSuite — AU Employee Turnover Statistics 2026</a></span><span class="src-desc">Industry turnover benchmarks including construction (21% annual average)</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<script>
+/* ── Region config ─────────────────────────────────────────────────── */
+const REGIONS = {
+  'United States':  { sym:'$',   code:'USD', key:'US', rate:1.00,  gp:3.40, dp:3.80, perVol:'gal', volFactor:1,       perDist:'mi',  distFactor:1,       effLabel:'MPG',     fuelNote:'US avg, Jun 2026 (EIA)' },
+  'Canada':         { sym:'CA$', code:'CAD', key:'CA', rate:1.36,  gp:1.65, dp:1.85, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'CA avg, Jun 2026 (NRC)' },
+  'European Union': { sym:'€',   code:'EUR', key:'EU', rate:0.92,  gp:1.65, dp:1.55, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'EU avg, Jun 2026 (Eurostat)' },
+  'United Kingdom': { sym:'£',   code:'GBP', key:'UK', rate:0.79,  gp:1.48, dp:1.52, perVol:'L',   volFactor:3.78541, perDist:'mi',  distFactor:1,       effLabel:'MPG',     fuelNote:'UK avg, Jun 2026 (DESNZ)' },
+  'Australia':      { sym:'A$',  code:'AUD', key:'AU', rate:1.54,  gp:2.10, dp:2.05, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'AU avg, Jun 2026 (ACCC)' },
+};
+
+/* ── Fleet data ────────────────────────────────────────────────────── */
+const FD = {
+  'Government': {
+    miles:{ US:20000, CA:12400, EU:12400, UK:12000, AU:14300 },
+    mpg:20,
+    ir:{ US:0.09, CA:0.10, EU:0.12, UK:0.09, AU:0.09 },
+    tr:{ US:0.18, CA:0.08, EU:0.08, UK:0.25, AU:0.07 },
+    gas:0.50, dsl:0.30,
+    cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
+    rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
+    desc:'Municipal administration, bylaw enforcement, parks and facilities — mixed sedan and light-truck fleet across varied duty cycles.',
+    src:'NSC Injury Facts; BLS JOLTS; ICMA fleet surveys; IBC (CA); DfT van statistics (UK); Treasury Board CA; Eurostat ESAW; ABS Job Mobility (AU)'
+  },
+  'Public Works': {
+    miles:{ US:18000, CA:14200, EU:15500, UK:15000, AU:15500 },
+    mpg:12,
+    ir:{ US:0.12, CA:0.13, EU:0.22, UK:0.10, AU:0.11 },
+    tr:{ US:0.22, CA:0.10, EU:0.15, UK:0.28, AU:0.10 },
+    gas:0.20, dsl:0.72,
+    cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
+    rc:{ US:11000, CA:10100, EU:8100,  UK:8700,  AU:10500 },
+    desc:'Road maintenance, sanitation support, infrastructure repair — heavy trucks and specialized equipment with frequent roadside exposure.',
+    src:'FMCSA; APWA fleet benchmarks; BLS JOLTS; NRCan medium truck survey (CA); DfT (UK); Eurostat ESAW NACE E (EU); BITRE (AU)'
+  },
+  'Waste & Recycling': {
+    miles:{ US:14000, CA:15500, EU:11200, UK:10000, AU:13000 },
+    mpg:6,
+    ir:{ US:0.14, CA:0.22, EU:0.28, UK:0.14, AU:0.14 },
+    tr:{ US:0.38, CA:0.35, EU:0.20, UK:0.37, AU:0.20 },
+    gas:0.05, dsl:0.88,
+    cc:{ US:85000, CA:68000, EU:55000, UK:60000, AU:66000 },
+    rc:{ US:13000, CA:11900, EU:9600,  UK:10300, AU:12400 },
+    desc:'Residential and commercial collection routes — heavy Class 8 vehicles with high stop frequency, backing risk, and extended engine idling.',
+    src:'FMCSA large vehicle crash costs; NWRA; EU-OSHA OSHwiki waste sector; Eurostat ESAW (EU); CIPD (UK); Lytx fleet risk data (CA); SWA (AU)'
+  },
+  'Police & First Responders': {
+    miles:{ US:45000, CA:31000, EU:24900, UK:17000, AU:14300 },
+    mpg:15,
+    ir:{ US:0.15, CA:0.15, EU:0.18, UK:0.08, AU:0.09 },
+    tr:{ US:0.12, CA:0.05, EU:0.10, UK:0.06, AU:0.06 },
+    gas:0.62, dsl:0.20,
+    cc:{ US:58000, CA:46000, EU:38000, UK:41000, AU:45000 },
+    rc:{ US:16000, CA:14700, EU:11800, UK:12700, AU:15300 },
+    desc:'Patrol, fire, EMS, and emergency dispatch — high annual mileage with emergency response driving, shift work, and elevated stress environments.',
+    src:'IACP; NSC emergency vehicle crash costs; BLS protective services; Home Office Police Workforce Statistics (UK); RCMP fleet management (CA); EU-OSHA (EU); ABS (AU)'
+  },
+  'Student Transportation': {
+    miles:{ US:12000, CA:24900, EU:15500, UK:15000, AU:11200 },
+    mpg:7,
+    ir:{ US:0.06, CA:0.05, EU:0.10, UK:0.07, AU:0.07 },
+    tr:{ US:0.32, CA:0.35, EU:0.12, UK:0.22, AU:0.20 },
+    gas:0.10, dsl:0.80,
+    cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
+    rc:{ US:8500,  CA:7800,  EU:6300,  UK:6700,  AU:8100  },
+    desc:'School bus routes and transit — seasonal schedules, tight stop density, and strict regulatory standards; among the lowest incident rates in fleet.',
+    src:'NHTSA; BLS transit JOLTS; NAPT; School Bus Ontario (CA); Zemo Partnership (UK); ERSO (EU); Bus Industry Confederation (AU)'
+  },
+  'Specialty Trades': {
+    miles:{ US:26000, CA:21700, EU:18600, UK:15500, AU:21700 },
+    mpg:18,
+    ir:{ US:0.12, CA:0.18, EU:0.16, UK:0.09, AU:0.13 },
+    tr:{ US:0.28, CA:0.28, EU:0.18, UK:0.30, AU:0.15 },
+    gas:0.60, dsl:0.30,
+    cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
+    rc:{ US:9500,  CA:8700,  EU:7000,  UK:7500,  AU:9100  },
+    desc:'Electricians, plumbers, HVAC, and mechanical contractors — cargo vans and pickups dispatched across residential and commercial job sites.',
+    src:'NSC; BLS construction trades; DfT van statistics (UK); Platform for Electromobility/T&E (EU); EURES 2024 (EU); NRCan (CA); SWA (AU)'
+  },
+  'Property Maintenance': {
+    miles:{ US:18000, CA:15500, EU:13700, UK:12000, AU:15500 },
+    mpg:16,
+    ir:{ US:0.10, CA:0.18, EU:0.14, UK:0.09, AU:0.10 },
+    tr:{ US:0.42, CA:0.36, EU:0.22, UK:0.35, AU:0.18 },
+    gas:0.65, dsl:0.25,
+    cc:{ US:48000, CA:38000, EU:31000, UK:34000, AU:37000 },
+    rc:{ US:7000,  CA:6400,  EU:5200,  UK:5600,  AU:6700  },
+    desc:'Landscaping, janitorial, pest control, and facility services — light trucks and vans covering tight urban and suburban territory.',
+    src:'NSC Injury Facts; BLS building/grounds maintenance; SHRM; Eurofound EU 2022 (EU); CIPD (UK); Lytx (CA); ABS Admin & Support Services (AU)'
+  },
+  'Professional Services': {
+    miles:{ US:22000, CA:18600, EU:18600, UK:18000, AU:21700 },
+    mpg:28,
+    ir:{ US:0.08, CA:0.12, EU:0.10, UK:0.08, AU:0.08 },
+    tr:{ US:0.22, CA:0.20, EU:0.19, UK:0.30, AU:0.12 },
+    gas:0.52, dsl:0.12,
+    cc:{ US:45000, CA:36000, EU:29000, UK:32000, AU:35000 },
+    rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
+    desc:'Insurance adjusters, field consultants, sales representatives — predominantly passenger cars and SUVs with predictable urban/suburban routing.',
+    src:'NSC personal vehicle crash costs; BLS professional JOLTS; Platform for Electromobility EU; EMCA 2023 (EU); DfT NTS (UK); ABS Job Mobility (AU)'
+  },
+  'Construction': {
+    miles:{ US:20000, CA:18600, EU:17400, UK:15500, AU:21700 },
+    mpg:8,
+    ir:{ US:0.14, CA:0.20, EU:0.25, UK:0.11, AU:0.13 },
+    tr:{ US:0.32, CA:0.30, EU:0.20, UK:0.35, AU:0.21 },
+    gas:0.10, dsl:0.85,
+    cc:{ US:95000, CA:76000, EU:62000, UK:67000, AU:74000 },
+    rc:{ US:12500, CA:11500, EU:9200,  UK:9900,  AU:11900 },
+    desc:'Material hauling, equipment transport, and site support — heavy-duty Class 5–8 trucks operating in high-risk construction zone environments.',
+    src:'FMCSA; CPWR; ATRI; Eurostat ESAW NACE F (EU); CEDEFOP 2023 (EU); BuildForce Canada; DfT van statistics (UK); ScaleSuite (AU)'
+  },
+  'Utilities': {
+    miles:{ US:20000, CA:18600, EU:15500, UK:18000, AU:17100 },
+    mpg:12,
+    ir:{ US:0.10, CA:0.17, EU:0.18, UK:0.10, AU:0.09 },
+    tr:{ US:0.18, CA:0.08, EU:0.12, UK:0.27, AU:0.10 },
+    gas:0.25, dsl:0.67,
+    cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
+    rc:{ US:12000, CA:11000, EU:8900,  UK:9500,  AU:11500 },
+    desc:'Electric, gas, water, and telecom field crews — service trucks with aerial lifts and equipment pods responding to faults and planned maintenance.',
+    src:'NSC; EEI utility workforce survey; SHRM; CIPD (UK); Eurostat ESAW NACE E (EU); Mercer Canada; ABS Job Mobility (AU)'
+  },
+  'Oil & Gas': {
+    miles:{ US:38000, CA:34200, EU:21700, UK:20000, AU:21700 },
+    mpg:14,
+    ir:{ US:0.16, CA:0.25, EU:0.22, UK:0.10, AU:0.12 },
+    tr:{ US:0.42, CA:0.35, EU:0.15, UK:0.27, AU:0.14 },
+    gas:0.28, dsl:0.67,
+    cc:{ US:85000, CA:68000, EU:55000, UK:60000, AU:66000 },
+    rc:{ US:14000, CA:12900, EU:10300, UK:11100, AU:13400 },
+    desc:'Oilfield services, pipeline inspection, and exploration support — high mileage across remote terrain with fatigue and adverse-road risk.',
+    src:'FMCSA; IADC HSE reports; BLS extraction JOLTS; CAPP (CA); Eurostat ESAW NACE B (EU); Silverstone Recruitment (AU)'
+  },
+  'Transportation & Logistics': {
+    miles:{ US:55000, CA:74600, EU:68400, UK:75000, AU:49300 },
+    mpg:7,
+    ir:{ US:0.12, CA:0.09, EU:0.35, UK:0.10, AU:0.14 },
+    tr:{ US:0.58, CA:0.60, EU:0.18, UK:0.30, AU:0.22 },
+    gas:0.10, dsl:0.83,
+    cc:{ US:125000, CA:100000, EU:82000, UK:88000, AU:97000 },
+    rc:{ US:15000,  CA:13800,  EU:11000, UK:11900, AU:14300 },
+    desc:'Regional and long-haul freight, dedicated fleet delivery — Class 7–8 trucks with high annual mileage and industry-leading turnover rates.',
+    src:'ATA; ATRI 2023; FMCSA; ERSO Facts & Figures 2023 (EU); IRU Truck Driver Barometer 2024 (EU); Trucking HR Canada; DfT Road Freight Statistics (UK); ABS SMVU 2020 (AU)'
+  },
+  'Other': {
+    miles:{ US:20000, CA:12400, EU:12400, UK:15000, AU:15500 },
+    mpg:18,
+    ir:{ US:0.10, CA:0.10, EU:0.12, UK:0.09, AU:0.10 },
+    tr:{ US:0.25, CA:0.15, EU:0.14, UK:0.20, AU:0.12 },
+    gas:0.52, dsl:0.30,
+    cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
+    rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
+    desc:'Mixed or non-classified fleet — applies industry-average benchmarks across fuel type, mileage, collision risk, and driver turnover.',
+    src:'NSC; BLS all-industry JOLTS; SHRM; regional government and industry survey averages'
+  }
+};
+const FLEET_NAMES = Object.keys(FD);
+
+/* ── State ─────────────────────────────────────────────────────────── */
+let S = {
+  ft:'Other', region:'United States',
+  drivers:50,
+  gas:0.50, dsl:0.30,
+  gp:3.40, dp:3.80,
+  fi:0.01, cr:0.05, ri:0.05
+};
+
+/* ── Calc ──────────────────────────────────────────────────────────── */
+function calc() {
+  const f = FD[S.ft];
+  const reg = REGIONS[S.region];
+  const gp_pg = S.gp * reg.volFactor;
+  const dp_pg = S.dp * reg.volFactor;
+  const blended = S.gas * gp_pg + S.dsl * dp_pg;
+  const miles = f.miles[reg.key];
+  const fuel = S.drivers * (miles / f.mpg) * blended * S.fi;
+  const cc_local = f.cc[reg.key] * reg.rate;
+  const rc_local = f.rc[reg.key] * reg.rate;
+  const coll = S.drivers * f.ir[reg.key] * cc_local * S.cr;
+  const ret  = S.drivers * f.tr[reg.key] * S.ri * 0.5 * rc_local;
+  const cost = S.drivers * 15 * 12 * reg.rate;
+  const gross = fuel + coll + ret;
+  const net   = gross - cost;
+  const roi   = cost > 0 ? Math.round((gross - cost) / cost * 100) : 0;
+  const pb    = gross > cost ? cost / (gross - cost) * 12 : null;
+  return {fuel, coll, ret, gross, cost, net, roi, pb};
+}
+
+/* ── Format ────────────────────────────────────────────────────────── */
+const el = id => document.getElementById(id);
+function money(n) {
+  const reg = REGIONS[S.region];
+  return reg.sym + Math.round(n).toLocaleString('en-US');
+}
+const payback = n => n === null ? '> 24 months' : n < 1 ? '< 1 month' : n.toFixed(1) + ' months';
+
+function setTxt(id, txt) {
+  const e = el(id);
+  if (!e || e.textContent === txt) return;
+  e.style.opacity = '0';
+  setTimeout(() => { e.textContent = txt; e.style.opacity = '1'; }, 120);
+}
+
+/* ── Render ────────────────────────────────────────────────────────── */
+function render() {
+  const r = calc();
+  const reg = REGIONS[S.region];
+  setTxt('roi-fig',     r.roi.toLocaleString('en-US'));
+  setTxt('payback-val', payback(r.pb));
+  setTxt('net-val',     money(r.net));
+  setTxt('fuel-val',    money(r.fuel));
+  setTxt('coll-val',    money(r.coll));
+  setTxt('ret-val',     money(r.ret));
+  setTxt('gross-val',   money(r.gross));
+  setTxt('cost-val',   '−' + money(r.cost));
+  el('roi-fig').style.color = r.roi >= 0 ? '#43D17A' : '#EF5350';
+
+  const suffix = reg.code !== 'USD' ? ' equiv.' : '';
+  el('prog-cost-lbl').textContent = `Program cost (${reg.sym}15/driver/month${suffix})`;
+
+  const g = Math.round(S.gas * 100), d = Math.round(S.dsl * 100);
+  const ev = Math.max(0, 100 - g - d);
+  el('gas-pct-d').textContent    = g + '%';
+  el('diesel-pct-d').textContent = d + '%';
+  el('ev-pct-d').textContent     = ev + '%';
+  el('bar-g').style.width = g + '%';
+  el('bar-d').style.width = d + '%';
+  el('bar-e').style.width = ev + '%';
+  const total = g + d + ev;
+  el('total-pct').textContent = '= ' + total + '%';
+  el('total-pill').className = 'total-pill ' + (total === 100 ? 'valid' : 'invalid');
+}
+
+/* ── Region change ─────────────────────────────────────────────────── */
+function onRegion(regionName) {
+  S.region = regionName;
+  const reg = REGIONS[regionName];
+  document.querySelectorAll('.region-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.region === regionName)
+  );
+  S.gp = reg.gp; S.dp = reg.dp;
+  el('gas-price').value    = reg.gp.toFixed(2);
+  el('diesel-price').value = reg.dp.toFixed(2);
+  el('gas-price-label').textContent    = `Gas / Petrol price (${reg.sym}/${reg.perVol})`;
+  el('diesel-price-label').textContent = `Diesel price (${reg.sym}/${reg.perVol})`;
+  el('gas-price-sym').textContent      = reg.sym;
+  el('diesel-price-sym').textContent   = reg.sym;
+  el('gas-price-hint').textContent     = reg.fuelNote + ' — regular';
+  el('diesel-price-hint').textContent  = reg.fuelNote + ' — diesel';
+  const currNote = reg.code === 'USD'
+    ? 'All dollar values in USD.'
+    : `All monetary values shown in ${reg.code} (${reg.sym}). Collision and retention benchmarks sourced in USD and converted at approximate market rates (1 USD = ${reg.rate} ${reg.code}).`;
+  el('footer-disclaimer').textContent = ' ' + currNote;
+  renderMethTable();
+  render();
+}
+
+/* ── Conservative mode ─────────────────────────────────────────────── */
+const MODES = {
+  standard:     { fi:3,  cr:7,  ri:7  },
+  conservative: { fi:1,  cr:5,  ri:5  }
+};
+function setMode(mode) {
+  const m = MODES[mode];
+  S.fi = m.fi / 100; S.cr = m.cr / 100; S.ri = m.ri / 100;
+  el('fuel-imp').value = m.fi;
+  el('coll-red').value = m.cr;
+  el('ret-imp').value  = m.ri;
+  el('mode-std').classList.toggle('active', mode === 'standard');
+  el('mode-con').classList.toggle('active', mode === 'conservative');
+  el('cons-indicator').style.display = mode === 'conservative' ? 'block' : 'none';
+  render();
+}
+
+/* ── Count sync ────────────────────────────────────────────────────── */
+function syncCounts() {
+  const d = S.drivers;
+  const gc = Math.round(S.gas * d);
+  const dc = Math.round(S.dsl * d);
+  const ec = Math.max(0, d - gc - dc);
+  if (document.activeElement !== el('gas-count'))    el('gas-count').value    = gc;
+  if (document.activeElement !== el('diesel-count')) el('diesel-count').value = dc;
+  if (document.activeElement !== el('ev-count'))     el('ev-count').value     = ec;
+  el('gas-count').max    = d;
+  el('diesel-count').max = d;
+  el('ev-count').max     = d;
+}
+
+/* ── 3-way slider logic ────────────────────────────────────────────── */
+function onGas(v) {
+  const g = parseInt(v);
+  const d = parseInt(el('diesel-sl').value);
+  const e = parseInt(el('ev-sl').value);
+  const rem = 100 - g;
+  const de = d + e;
+  const nd = de === 0 ? Math.floor(rem/2) : Math.round(d / de * rem);
+  const ne = rem - nd;
+  el('diesel-sl').value = nd; el('ev-sl').value = ne;
+  S.gas = g/100; S.dsl = nd/100;
+  syncCounts(); render();
+}
+function onDsl(v) {
+  const d = parseInt(v);
+  const g = parseInt(el('gas-sl').value);
+  const e = parseInt(el('ev-sl').value);
+  const rem = 100 - d;
+  const ge = g + e;
+  const ng = ge === 0 ? Math.floor(rem/2) : Math.round(g / ge * rem);
+  const ne = rem - ng;
+  el('gas-sl').value = ng; el('ev-sl').value = ne;
+  S.gas = ng/100; S.dsl = d/100;
+  syncCounts(); render();
+}
+function onEV(v) {
+  const e = parseInt(v);
+  const g = parseInt(el('gas-sl').value);
+  const d = parseInt(el('diesel-sl').value);
+  const rem = 100 - e;
+  const gd = g + d;
+  const ng = gd === 0 ? Math.floor(rem/2) : Math.round(g / gd * rem);
+  const nd = rem - ng;
+  el('gas-sl').value = ng; el('diesel-sl').value = nd;
+  S.gas = ng/100; S.dsl = nd/100;
+  syncCounts(); render();
+}
+
+/* ── Count input logic ─────────────────────────────────────────────── */
+function onGasCount(val) {
+  const gc = Math.min(S.drivers, Math.max(0, parseInt(val) || 0));
+  const rem = S.drivers - gc;
+  const dc = parseInt(el('diesel-count').value) || 0;
+  const ec = parseInt(el('ev-count').value)     || 0;
+  const de = dc + ec;
+  const nd = de === 0 ? Math.floor(rem/2) : Math.round(dc / de * rem);
+  const ne = rem - nd;
+  S.gas = gc / S.drivers; S.dsl = nd / S.drivers;
+  el('gas-sl').value    = Math.round(S.gas * 100);
+  el('diesel-sl').value = Math.round(S.dsl * 100);
+  el('ev-sl').value     = Math.max(0, 100 - Math.round(S.gas*100) - Math.round(S.dsl*100));
+  el('diesel-count').value = nd; el('ev-count').value = ne;
+  render();
+}
+function onDslCount(val) {
+  const dc = Math.min(S.drivers, Math.max(0, parseInt(val) || 0));
+  const rem = S.drivers - dc;
+  const gc = parseInt(el('gas-count').value) || 0;
+  const ec = parseInt(el('ev-count').value)  || 0;
+  const ge = gc + ec;
+  const ng = ge === 0 ? Math.floor(rem/2) : Math.round(gc / ge * rem);
+  const ne = rem - ng;
+  S.dsl = dc / S.drivers; S.gas = ng / S.drivers;
+  el('diesel-sl').value = Math.round(S.dsl * 100);
+  el('gas-sl').value    = Math.round(S.gas * 100);
+  el('ev-sl').value     = Math.max(0, 100 - Math.round(S.gas*100) - Math.round(S.dsl*100));
+  el('gas-count').value = ng; el('ev-count').value = ne;
+  render();
+}
+function onEVCount(val) {
+  const ec = Math.min(S.drivers, Math.max(0, parseInt(val) || 0));
+  const rem = S.drivers - ec;
+  const gc = parseInt(el('gas-count').value)    || 0;
+  const dc = parseInt(el('diesel-count').value) || 0;
+  const gd = gc + dc;
+  const ng = gd === 0 ? Math.floor(rem/2) : Math.round(gc / gd * rem);
+  const nd = rem - ng;
+  S.gas = ng / S.drivers; S.dsl = nd / S.drivers;
+  el('gas-sl').value    = Math.round(S.gas * 100);
+  el('diesel-sl').value = Math.round(S.dsl * 100);
+  el('ev-sl').value     = Math.max(0, 100 - Math.round(S.gas*100) - Math.round(S.dsl*100));
+  el('gas-count').value = ng; el('diesel-count').value = nd;
+  render();
+}
+
+/* ── Fleet change ──────────────────────────────────────────────────── */
+function onFleet(name) {
+  const f = FD[name]; if (!f) return;
+  S.ft = name; S.gas = f.gas; S.dsl = f.dsl;
+  el('gas-sl').value    = Math.round(f.gas * 100);
+  el('diesel-sl').value = Math.round(f.dsl * 100);
+  el('ev-sl').value     = Math.max(0, 100 - Math.round(f.gas*100) - Math.round(f.dsl*100));
+  el('fleet-desc').textContent = f.desc;
+  syncCounts(); render();
+}
+
+/* ── Accordion ─────────────────────────────────────────────────────── */
+function toggleAcc(hdr) {
+  hdr.classList.toggle('open');
+  hdr.nextElementSibling.classList.toggle('open');
+}
+
+/* ── Methodology table ─────────────────────────────────────────────── */
+function renderMethTable() {
+  const reg = REGIONS[S.region];
+  el('meth-dist-hdr').textContent = reg.perDist + '/Yr';
+  el('meth-eff-hdr').textContent  = reg.effLabel;
+  el('meth-cc-hdr').textContent   = `Avg Collision Cost (${reg.sym})`;
+  el('meth-rc-hdr').textContent   = `Replace Cost (${reg.sym})`;
+
+  const tbody = el('meth-tbody');
+  tbody.innerHTML = '';
+  FLEET_NAMES.forEach(name => {
+    const f = FD[name];
+    const ev = Math.max(0, 100 - Math.round(f.gas*100) - Math.round(f.dsl*100));
+    const fmiles = f.miles[reg.key];
+    const dist = reg.distFactor === 1
+      ? fmiles.toLocaleString()
+      : Math.round(fmiles * reg.distFactor).toLocaleString();
+    const eff = reg.effLabel === 'MPG'
+      ? f.mpg
+      : (235.214 / f.mpg).toFixed(1);
+    const cc_local = Math.round(f.cc[reg.key] * reg.rate).toLocaleString('en-US');
+    const rc_local = Math.round(f.rc[reg.key] * reg.rate).toLocaleString('en-US');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="fn">${name}</td>
+      <td class="uc">${f.desc.split('—')[0].trim()}</td>
+      <td class="num">${dist}</td>
+      <td class="num">${eff}</td>
+      <td class="num">${reg.sym}${cc_local}</td>
+      <td class="num">${Math.round(f.ir[reg.key]*100)}%</td>
+      <td class="num">${Math.round(f.tr[reg.key]*100)}%</td>
+      <td class="num">${reg.sym}${rc_local}</td>
+      <td class="num">${Math.round(f.gas*100)}%</td>
+      <td class="num">${Math.round(f.dsl*100)}%</td>
+      <td class="num">${ev}%</td>
+      <td style="font-size:1.1rem;color:var(--text-muted);min-width:16rem">${f.src}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── Init ──────────────────────────────────────────────────────────── */
+function init() {
+  document.querySelectorAll('.region-tab').forEach(tab =>
+    tab.addEventListener('click', () => onRegion(tab.dataset.region))
+  );
+  el('fleet-type').addEventListener('change', e => onFleet(e.target.value));
+  el('drivers').addEventListener('input', e => {
+    S.drivers = Math.max(1, parseInt(e.target.value) || 1);
+    syncCounts(); render();
+  });
+  el('gas-sl').addEventListener('input',      e => onGas(e.target.value));
+  el('diesel-sl').addEventListener('input',   e => onDsl(e.target.value));
+  el('ev-sl').addEventListener('input',       e => onEV(e.target.value));
+  el('gas-count').addEventListener('change',    e => onGasCount(e.target.value));
+  el('diesel-count').addEventListener('change', e => onDslCount(e.target.value));
+  el('ev-count').addEventListener('change',     e => onEVCount(e.target.value));
+  el('gas-price').addEventListener('input',   e => { S.gp = parseFloat(e.target.value) || 3.40; render(); });
+  el('diesel-price').addEventListener('input',e => { S.dp = parseFloat(e.target.value) || 3.80; render(); });
+  el('fuel-imp').addEventListener('input',    e => { S.fi = (parseFloat(e.target.value) || 1) / 100; render(); });
+  el('coll-red').addEventListener('input',    e => { S.cr = (parseFloat(e.target.value) || 5) / 100; render(); });
+  el('ret-imp').addEventListener('input',     e => { S.ri = (parseFloat(e.target.value) || 5) / 100; render(); });
+
+  setMode('conservative');
+  renderMethTable();
+  onFleet('Other');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

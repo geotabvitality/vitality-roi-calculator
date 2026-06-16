@@ -486,7 +486,7 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
                 <option>Utilities</option>
                 <option>Oil &amp; Gas</option>
                 <option>Transportation &amp; Logistics</option>
-                <option>Other</option>
+                <option selected>Other</option>
               </select>
             </div>
             <div class="fleet-desc" id="fleet-desc"></div>
@@ -603,7 +603,7 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
           </div>
           <div class="imp-item">
             <div class="imp-label">Driver retention gain</div>
-            <div class="imp-sub">Range: 5–20%&thinsp;·&thinsp;Wellington County (Geotab Vitality): 15%</div>
+            <div class="imp-sub">Range: 5–20%&thinsp;·&thinsp;Geotab Vitality program data</div>
             <div class="adv-input-wrap">
               <input type="number" id="ret-imp" value="10" min="0" step="1">
               <span class="adv-pct">%</span>
@@ -621,11 +621,11 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
           <div class="results-eyebrow">Estimated Annual ROI</div>
           <div class="mode-in-results">
             <div class="mode-switch-dark">
-              <button id="mode-std" onclick="setMode('standard')">Standard</button>
+              <button id="mode-std" onclick="setMode('standard')">Optimistic</button>
               <button id="mode-con" onclick="setMode('conservative')">Conservative</button>
             </div>
           </div>
-          <div id="cons-indicator" style="display:none;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:0.4rem">(Conservative estimate)</div>
+          <div id="cons-indicator" style="display:none;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:0.4rem">(Conservative Estimate)</div>
           <div>
             <span class="roi-figure" id="roi-fig">—</span><span class="roi-unit">%</span>
           </div>
@@ -987,11 +987,11 @@ const FLEET_NAMES = Object.keys(FD);
 
 /* ── State ─────────────────────────────────────────────────────────── */
 let S = {
-  ft:'Government', region:'United States',
+  ft:'Other', region:'United States',
   drivers:50,
   gas:0.50, dsl:0.30,
   gp:3.40, dp:3.80,
-  fi:0.05, cr:0.10, ri:0.10
+  fi:0.01, cr:0.05, ri:0.05
 };
 
 /* ── Calc ──────────────────────────────────────────────────────────── */
@@ -1086,8 +1086,8 @@ function onRegion(regionName) {
 
 /* ── Conservative mode ─────────────────────────────────────────────── */
 const MODES = {
-  standard:     { fi:5,  cr:10, ri:10 },
-  conservative: { fi:3,  cr:7,  ri:7  }
+  standard:     { fi:3,  cr:7,  ri:7  },
+  conservative: { fi:1,  cr:5,  ri:5  }
 };
 function setMode(mode) {
   const m = MODES[mode];
@@ -1275,13 +1275,13 @@ function init() {
   el('ev-count').addEventListener('change',     e => onEVCount(e.target.value));
   el('gas-price').addEventListener('input',   e => { S.gp = parseFloat(e.target.value) || 3.40; render(); });
   el('diesel-price').addEventListener('input',e => { S.dp = parseFloat(e.target.value) || 3.80; render(); });
-  el('fuel-imp').addEventListener('input',    e => { S.fi = (parseFloat(e.target.value) || 5) / 100; render(); });
-  el('coll-red').addEventListener('input',    e => { S.cr = (parseFloat(e.target.value) || 10) / 100; render(); });
-  el('ret-imp').addEventListener('input',     e => { S.ri = (parseFloat(e.target.value) || 10) / 100; render(); });
+  el('fuel-imp').addEventListener('input',    e => { S.fi = (parseFloat(e.target.value) || 1) / 100; render(); });
+  el('coll-red').addEventListener('input',    e => { S.cr = (parseFloat(e.target.value) || 5) / 100; render(); });
+  el('ret-imp').addEventListener('input',     e => { S.ri = (parseFloat(e.target.value) || 5) / 100; render(); });
 
-  setMode('standard');
+  setMode('conservative');
   renderMethTable();
-  onFleet('Government');
+  onFleet('Other');
 }
 
 document.addEventListener('DOMContentLoaded', init);

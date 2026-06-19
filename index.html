@@ -254,16 +254,6 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.18); }
 }
 @media (max-width: 640px) { .imp-grid { grid-template-columns: 1fr; } }
 
-/* ── Mode toggle (dark panel version — lives in results-top) ─────────── */
-.mode-in-results { display: flex; justify-content: center; margin-bottom: 1.4rem; }
-.mode-switch-dark { display: inline-flex; border: 1px solid rgba(255,255,255,0.35); border-radius: var(--radius); overflow: hidden; }
-.mode-switch-dark button {
-  font-family: Roboto, sans-serif; font-size: 1.15rem; font-weight: 500;
-  padding: 0.45rem 1.3rem; border: none; background: transparent;
-  color: rgba(255,255,255,0.58); cursor: pointer; transition: all 0.15s;
-}
-.mode-switch-dark button.active { background: rgba(255,255,255,0.2); color: #fff; }
-.mode-switch-dark button:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.08); }
 
 /* ── Results panel ───────────────────────────────────────────────────── */
 .results-panel {
@@ -477,7 +467,6 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
                 <option>Government</option>
                 <option>Public Works</option>
                 <option>Waste &amp; Recycling</option>
-                <option>Police &amp; First Responders</option>
                 <option>Student Transportation</option>
                 <option>Specialty Trades</option>
                 <option>Property Maintenance</option>
@@ -589,23 +578,23 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
             <div class="imp-label">Fuel efficiency gain</div>
             <div class="imp-sub">Range: 1–7%&thinsp;·&thinsp;FiberLight (Geotab Vitality): 7%&thinsp;·&thinsp;ATRI benchmark: 3–5%</div>
             <div class="adv-input-wrap">
-              <input type="number" id="fuel-imp" value="5" min="0" step="0.5">
+              <input type="number" id="fuel-imp" value="5" min="0" max="25" step="0.5">
               <span class="adv-pct">%</span>
             </div>
           </div>
           <div class="imp-item">
             <div class="imp-label">Collision reduction</div>
-            <div class="imp-sub">Range: 5–15%&thinsp;·&thinsp;Geotab Vitality PCR coaching data</div>
+            <div class="imp-sub">Range: 5–15%&thinsp;·&thinsp;Geotab Vitality fleet outcomes (2023–2026) — see case studies below</div>
             <div class="adv-input-wrap">
-              <input type="number" id="coll-red" value="10" min="0" step="1">
+              <input type="number" id="coll-red" value="12" min="0" max="30" step="1">
               <span class="adv-pct">%</span>
             </div>
           </div>
           <div class="imp-item">
             <div class="imp-label">Driver retention gain</div>
-            <div class="imp-sub">Range: 5–20%&thinsp;·&thinsp;Geotab Vitality program data</div>
+            <div class="imp-sub">Range: 5–20%&thinsp;·&thinsp;Geotab Vitality fleet outcomes, incl. King Township case study (2025)</div>
             <div class="adv-input-wrap">
-              <input type="number" id="ret-imp" value="10" min="0" step="1">
+              <input type="number" id="ret-imp" value="15" min="0" max="30" step="1">
               <span class="adv-pct">%</span>
             </div>
           </div>
@@ -619,13 +608,6 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
       <div class="results-panel">
         <div class="results-top">
           <div class="results-eyebrow">Estimated Annual ROI</div>
-          <div class="mode-in-results">
-            <div class="mode-switch-dark">
-              <button id="mode-std" onclick="setMode('standard')">Optimistic</button>
-              <button id="mode-con" onclick="setMode('conservative')">Conservative</button>
-            </div>
-          </div>
-          <div id="cons-indicator" style="display:none;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:0.4rem">(Conservative Estimate)</div>
           <div>
             <span class="roi-figure" id="roi-fig">—</span><span class="roi-unit">%</span>
           </div>
@@ -667,6 +649,7 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
         </div>
 
         <div class="results-footer">
+          <div class="hero-disclaimer" style="margin-bottom:0.6rem">Improvement assumptions are segment-specific defaults based on observed Geotab Vitality fleet outcomes — adjust inputs above to reflect your fleet.</div>
           Illustrative estimates only. Actual results will vary based on fleet conditions, driver adoption, and operating environment.
           <span id="footer-disclaimer"></span>
         </div>
@@ -707,14 +690,14 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
               <th>Segment</th><th>Typical Operations</th>
               <th class="num" id="meth-dist-hdr">Miles/Yr</th>
               <th class="num" id="meth-eff-hdr">MPG</th>
-              <th class="num" id="meth-cc-hdr">Avg Collision Cost</th><th class="num">Incident Rate</th>
+              <th class="num" id="meth-cc-hdr">Blended Collision Cost</th><th class="num">PCR (crashes/100k km)</th>
               <th class="num">Turnover Rate</th><th class="num" id="meth-rc-hdr">Replace Cost</th>
               <th class="num">Gas %</th><th class="num">Diesel %</th><th class="num">EV/Hybrid %</th>
               <th>Sources</th>
             </tr></thead>
             <tbody id="meth-tbody"></tbody>
           </table>
-          <p class="tbl-note">Incident Rate = at-fault commercial fleet incidents per driver/year. 50% unavoidable churn factor applied to retention savings (retirements, medical, relocation). Collision and replacement costs reflect regional differences in healthcare systems, legal liability regimes, and labor markets — not simply currency-converted from a single source. Sources: NSC/FMCSA/NHTSA (US), IBC/CASC (Canada), ETSC/Eurostat (EU), DfT/HSE (UK), BITRE/Safe Work Australia.</p>
+          <p class="tbl-note">PCR (Predictive Collision Rate) = model-predicted crashes per 100,000 km driven, sourced from Geotab fleet telemetry across 44,000+ commercial fleets across 5 regions (Apr 2026). Collision savings = PCR × fleet km / 100,000 × blended collision cost × improvement %. Blended collision cost = weighted average of major (injury) and minor (PDO) costs by industry mix. 50% unavoidable churn factor applied to retention savings. Costs are employer-facing (repair, medical, legal, downtime, admin) — not societal/QALY values. Regional costs sourced independently: NETS/FMCSA (US), CRISP/IBC (CA), DfT TAG 2023/HSE (UK), SafetyCube/ETSC (EU), BITRE/NRSPP (AU).</p>
         </div>
       </div>
     </div>
@@ -729,12 +712,12 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
           <div class="formula-card">
             <div class="formula-name">Fuel Savings</div>
             <div class="formula-expr">Drivers × (Miles ÷ MPG) × Blended fuel cost × Fuel Improvement %</div>
-            <div class="formula-note">Blended fuel cost = (Gas % × Gas price) + (Diesel % × Diesel price). EV/hybrid vehicles contribute $0 to blended fuel cost — naturally excluded. Fleet-type MPG and annual miles are defaults from the table above. For non-US regions, fuel prices are entered in local currency per litre and converted to per-gallon equivalent internally.</div>
+            <div class="formula-note">Blended fuel cost = (Gas % × Gas price) + (Diesel % × Diesel price). EV/hybrid vehicles contribute $0 to blended fuel cost — naturally excluded. Fleet-type MPG and annual miles are defaults from the table above. US prices are per gallon. UK, CA, EU, and AU prices are per litre, converted to per-gallon equivalent internally.</div>
           </div>
           <div class="formula-card">
             <div class="formula-name">Collision Risk Savings</div>
-            <div class="formula-expr">Drivers × Incident Rate × Avg Collision Cost × Collision Reduction %</div>
-            <div class="formula-note">Incident rate and collision cost are segment defaults. All-in cost per at-fault incident includes vehicle repair, medical, liability, downtime, and claims administration. Applies to all vehicle types.</div>
+            <div class="formula-expr">(Drivers × Annual km ÷ 100,000) × PCR × Blended Collision Cost × Collision Reduction %</div>
+            <div class="formula-note">PCR (Predictive Collision Rate) = crashes per 100,000 km from Geotab fleet telemetry. Annual km = segment-average miles × 1.60934. Mileage scales the expected collision count — higher-mileage fleets have proportionally more exposure. Blended collision cost = weighted average of major (injury) and minor (PDO) costs by industry mix. Methodology matches Wellington Motor Fleet pilot (May 2026).</div>
           </div>
           <div class="formula-card">
             <div class="formula-name">Driver Retention Savings</div>
@@ -743,8 +726,8 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
           </div>
           <div class="formula-card">
             <div class="formula-name">Program Cost &amp; ROI</div>
-            <div class="formula-expr">Program Cost = Drivers × $15/month × 12 &nbsp;|&nbsp; ROI = (Gross − Cost) ÷ Cost × 100</div>
-            <div class="formula-note">Net Savings = Gross Savings − Program Cost. Payback = Program Cost ÷ (Gross − Cost) × 12 months. $15/driver/month converted to local currency at approximate market rates for non-USD regions.</div>
+            <div class="formula-expr">Program Cost = Drivers × Regional monthly rate × 12 &nbsp;|&nbsp; ROI = (Gross − Cost) ÷ Cost × 100</div>
+            <div class="formula-note">Net Savings = Gross Savings − Program Cost. Payback = (Annual Program Cost ÷ Annual Gross Savings) × 12 — months for gross savings to cover the annual fee (e.g. 100% ROI = 6-month payback, 200% ROI = 4-month payback). Regional monthly rates: $15 USD · CA$15 · €13.75 · £9.75 · A$15 per driver.</div>
           </div>
         </div>
       </div>
@@ -804,9 +787,8 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
           <ul class="src-list">
             <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/van-statistics-2019-to-2020" target="_blank">DfT Van Statistics 2019–20</a></span><span class="src-desc">Department for Transport — annual miles by van use type (local operations, tools/materials, national); primary basis for UK mileage by segment</span></li>
             <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/road-freight-statistics-2024/domestic-road-freight-statistics-united-kingdom-2024" target="_blank">DfT Road Freight Statistics 2024</a></span><span class="src-desc">HGV annual mileage benchmarks; basis for UK T&amp;L segment (75,000 miles/year)</span></li>
-            <li><span class="src-org"><a href="https://www.gov.uk/government/statistics/police-workforce-england-and-wales-31-march-2024/police-workforce-england-and-wales-31-march-2024" target="_blank">Home Office Police Workforce Statistics 2024</a></span><span class="src-desc">Police officer leaver rate (6.2%); basis for Police &amp; First Responders turnover</span></li>
             <li><span class="src-org"><a href="https://www.hrdatahub.com/blog/employee-turnover-by-industry" target="_blank">CIPD / ONS APS — Employee Turnover by Industry 2022–23</a></span><span class="src-desc">Annual turnover rates by sector across UK industries; primary basis for all UK segment turnover rates</span></li>
-            <li><span class="src-org"><a href="https://www.drivingforbetterbusiness.com/articles/accident-frequency-rates/" target="_blank">Driving for Better Business — Accident Frequency Rates</a></span><span class="src-desc">UK fleet-wide commercial vehicle incident rate baseline: 0.09 collisions per driver/year (all sectors)</span></li>
+            <li><span class="src-org"><a href="https://www.drivingforbetterbusiness.com/articles/accident-frequency-rates/" target="_blank">Driving for Better Business — Accident Frequency Rates</a></span><span class="src-desc">UK fleet-wide commercial vehicle incident rate baseline; used to validate relative PCR rankings across UK segments</span></li>
             <li><span class="src-org"><a href="https://www.hse.gov.uk/statistics/overview.htm" target="_blank">HSE Key Figures 2024/25</a></span><span class="src-desc">Health &amp; Safety Executive — non-fatal workplace injury rates by sector; basis for relative risk adjustments</span></li>
           </ul>
 
@@ -816,7 +798,7 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
             <li><span class="src-org"><a href="https://www.abs.gov.au/statistics/labour/jobs/job-mobility/latest-release" target="_blank">ABS Job Mobility Feb 2025</a></span><span class="src-desc">Employer-change rates by industry sector; primary basis for all AU segment turnover rates</span></li>
             <li><span class="src-org"><a href="https://data.safeworkaustralia.gov.au/insights/key-whs-statistics-australia/2024" target="_blank">Safe Work Australia Key WHS Statistics 2024</a></span><span class="src-desc">Workplace injury incidence rates per million hours worked by ANZSIC industry; basis for AU relative risk by segment</span></li>
             <li><span class="src-org"><a href="https://bic.asn.au/industry-stats/2020-bus-operations-stats/" target="_blank">Bus Industry Confederation — Bus Operations Stats 2020</a></span><span class="src-desc">Annual km for dedicated school services; basis for AU Student Transportation mileage (18,000 km/year)</span></li>
-            <li><span class="src-org"><a href="https://www.tac.vic.gov.au/road-safety/road-users/drivers/fleet-safety" target="_blank">TAC Victoria — Fleet Safety</a></span><span class="src-desc">Transport Accident Commission — 0.25 vehicle incidents per fleet vehicle per year (all company cars); AU fleet collision baseline</span></li>
+            <li><span class="src-org"><a href="https://www.tac.vic.gov.au/road-safety/road-users/drivers/fleet-safety" target="_blank">TAC Victoria — Fleet Safety</a></span><span class="src-desc">Transport Accident Commission — AU fleet collision baseline across all company cars; used to validate relative PCR rankings across AU segments</span></li>
             <li><span class="src-org"><a href="https://www.scalesuite.com.au/resources/australian-employee-turnover-statistics-2026" target="_blank">ScaleSuite — AU Employee Turnover Statistics 2026</a></span><span class="src-desc">Industry turnover benchmarks including construction (21% annual average)</span></li>
           </ul>
         </div>
@@ -830,157 +812,193 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
 <script>
 /* ── Region config ─────────────────────────────────────────────────── */
 const REGIONS = {
-  'United States':  { sym:'$',   code:'USD', key:'US', rate:1.00,  gp:3.40, dp:3.80, perVol:'gal', volFactor:1,       perDist:'mi',  distFactor:1,       effLabel:'MPG',     fuelNote:'US avg, Jun 2026 (EIA)' },
-  'Canada':         { sym:'CA$', code:'CAD', key:'CA', rate:1.36,  gp:1.65, dp:1.85, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'CA avg, Jun 2026 (NRC)' },
-  'European Union': { sym:'€',   code:'EUR', key:'EU', rate:0.92,  gp:1.65, dp:1.55, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'EU avg, Jun 2026 (Eurostat)' },
-  'United Kingdom': { sym:'£',   code:'GBP', key:'UK', rate:0.79,  gp:1.48, dp:1.52, perVol:'L',   volFactor:3.78541, perDist:'mi',  distFactor:1,       effLabel:'MPG',     fuelNote:'UK avg, Jun 2026 (DESNZ)' },
-  'Australia':      { sym:'A$',  code:'AUD', key:'AU', rate:1.54,  gp:2.10, dp:2.05, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'AU avg, Jun 2026 (ACCC)' },
+  'United States':  { sym:'$',   code:'USD', key:'US', rate:1.00,  pp:15.00, gp:3.40, dp:3.80, perVol:'gal', volFactor:1,       perDist:'mi',  distFactor:1,       effLabel:'MPG',     fuelNote:'US avg, Jun 2026 (EIA)' },
+  'Canada':         { sym:'CA$', code:'CAD', key:'CA', rate:1.36,  pp:15.00, gp:1.65, dp:1.85, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'CA avg, Jun 2026 (NRC)' },
+  'European Union': { sym:'€',   code:'EUR', key:'EU', rate:0.92,  pp:13.75, gp:1.65, dp:1.55, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'EU avg, Jun 2026 (Eurostat)' },
+  'United Kingdom': { sym:'£',   code:'GBP', key:'UK', rate:0.79,  pp:9.75,  gp:1.48, dp:1.52, perVol:'L',   volFactor:3.78541, perDist:'mi',  distFactor:1,       effLabel:'MPG',     fuelNote:'UK avg, Jun 2026 (DESNZ)' },
+  'Australia':      { sym:'A$',  code:'AUD', key:'AU', rate:1.54,  pp:15.00, gp:2.10, dp:2.05, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'AU avg, Jun 2026 (ACCC)' },
 };
 
 /* ── Fleet data ────────────────────────────────────────────────────── */
+// ir = predicted crashes per 100,000 km (PCR format) — sourced from Geotab fleet telemetry
+//      (geotab-product-prod CombinedOutcomes + Salesforce_Views, April 2026, n=25,000+ fleets)
+//      Low-count cells (<50 fleets) use regional "Other" average.
+// cc_maj / cc_min = employer-facing major/minor collision costs in USD
+//      maj_pct = fraction of collisions that are major (injury); remainder are minor (PDO)
+//      Regional costs sourced independently: NETS/FMCSA (US), CRISP/IBC (CA),
+//      DfT/HSE (UK), SafetyCube/ETSC (EU), BITRE/NRSPP (AU)
+// Collision savings formula (matching Wellington Motor Fleet methodology):
+//      expected_collisions = ir × (drivers × miles_per_driver_km / 100000)
+//      blended_cost = maj_pct × cc_maj + (1-maj_pct) × cc_min  [in USD, converted to local]
+//      collision_savings = expected_collisions × blended_cost × cr (improvement %)
 const FD = {
   'Government': {
     miles:{ US:20000, CA:12400, EU:12400, UK:12000, AU:14300 },
     mpg:20,
-    ir:{ US:0.09, CA:0.10, EU:0.12, UK:0.09, AU:0.09 },
+    ir:{ US:0.0881, CA:0.0741, EU:0.0853, UK:0.0877, AU:0.0533 },
     tr:{ US:0.18, CA:0.08, EU:0.08, UK:0.25, AU:0.07 },
     gas:0.50, dsl:0.30,
-    cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
-    rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
+    cc_maj:{ US:113000, CA:102000, EU:67000, UK:82000, AU:93000 },
+    cc_min:{ US:17000,  CA:15300,  EU:7500,  UK:9500,  AU:12000 },
+    maj_pct:{ US:0.18, CA:0.18, EU:0.18, UK:0.18, AU:0.18 },
+    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600 },
+    def:{fi:6, cr:12, ri:12},
     desc:'Municipal administration, bylaw enforcement, parks and facilities — mixed sedan and light-truck fleet across varied duty cycles.',
-    src:'NSC Injury Facts; BLS JOLTS; ICMA fleet surveys; IBC (CA); DfT van statistics (UK); Treasury Board CA; Eurostat ESAW; ABS Job Mobility (AU)'
+    src:'Geotab fleet telemetry PCR (n=952 US / 376 CA fleets, Apr 2026); NETS 2019 / FMCSA (US costs); CRISP/DriveToLive 2018 (CA costs); DfT TAG 2023 / HSE (UK costs); SafetyCube D3.2 / ETSC (EU costs); BITRE 2022 / NRSPP (AU costs)'
   },
   'Public Works': {
     miles:{ US:18000, CA:14200, EU:15500, UK:15000, AU:15500 },
     mpg:12,
-    ir:{ US:0.12, CA:0.13, EU:0.22, UK:0.10, AU:0.11 },
+    ir:{ US:0.0680, CA:0.0656, EU:0.0736, UK:0.0598, AU:0.0534 },
     tr:{ US:0.22, CA:0.10, EU:0.15, UK:0.28, AU:0.10 },
     gas:0.20, dsl:0.72,
-    cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
-    rc:{ US:11000, CA:10100, EU:8100,  UK:8700,  AU:10500 },
+    cc_maj:{ US:128000, CA:115000, EU:73000, UK:88000, AU:103000 },
+    cc_min:{ US:22000,  CA:19800,  EU:8000,  UK:10500, AU:13500 },
+    maj_pct:{ US:0.22, CA:0.22, EU:0.22, UK:0.22, AU:0.22 },
+    rc:{ US:11000, CA:10100, EU:8100, UK:8700, AU:10500 },
+    def:{fi:4, cr:10, ri:10},
     desc:'Road maintenance, sanitation support, infrastructure repair — heavy trucks and specialized equipment with frequent roadside exposure.',
-    src:'FMCSA; APWA fleet benchmarks; BLS JOLTS; NRCan medium truck survey (CA); DfT (UK); Eurostat ESAW NACE E (EU); BITRE (AU)'
+    src:'Geotab fleet telemetry PCR (n=540 US / 254 CA fleets, Apr 2026); NETS 2019 / FMCSA (US costs); CRISP/DriveToLive 2018 (CA costs); DfT TAG 2023 / HSE (UK costs); SafetyCube D3.2 / Eurostat ESAW (EU costs); BITRE 2022 / Safe Work Australia (AU costs)'
   },
   'Waste & Recycling': {
     miles:{ US:14000, CA:15500, EU:11200, UK:10000, AU:13000 },
     mpg:6,
-    ir:{ US:0.14, CA:0.22, EU:0.28, UK:0.14, AU:0.14 },
+    ir:{ US:0.0623, CA:0.0575, EU:0.0704, UK:0.0582, AU:0.0537 },
     tr:{ US:0.38, CA:0.35, EU:0.20, UK:0.37, AU:0.20 },
     gas:0.05, dsl:0.88,
-    cc:{ US:85000, CA:68000, EU:55000, UK:60000, AU:66000 },
-    rc:{ US:13000, CA:11900, EU:9600,  UK:10300, AU:12400 },
+    cc_maj:{ US:158000, CA:142000, EU:85000, UK:104000, AU:118000 },
+    cc_min:{ US:30000,  CA:27000,  EU:9500,  UK:12000,  AU:15000 },
+    maj_pct:{ US:0.35, CA:0.35, EU:0.30, UK:0.35, AU:0.30 },
+    rc:{ US:13000, CA:11900, EU:9600, UK:10300, AU:12400 },
+    def:{fi:2, cr:8, ri:10},
     desc:'Residential and commercial collection routes — heavy Class 8 vehicles with high stop frequency, backing risk, and extended engine idling.',
-    src:'FMCSA large vehicle crash costs; NWRA; EU-OSHA OSHwiki waste sector; Eurostat ESAW (EU); CIPD (UK); Lytx fleet risk data (CA); SWA (AU)'
-  },
-  'Police & First Responders': {
-    miles:{ US:45000, CA:31000, EU:24900, UK:17000, AU:14300 },
-    mpg:15,
-    ir:{ US:0.15, CA:0.15, EU:0.18, UK:0.08, AU:0.09 },
-    tr:{ US:0.12, CA:0.05, EU:0.10, UK:0.06, AU:0.06 },
-    gas:0.62, dsl:0.20,
-    cc:{ US:58000, CA:46000, EU:38000, UK:41000, AU:45000 },
-    rc:{ US:16000, CA:14700, EU:11800, UK:12700, AU:15300 },
-    desc:'Patrol, fire, EMS, and emergency dispatch — high annual mileage with emergency response driving, shift work, and elevated stress environments.',
-    src:'IACP; NSC emergency vehicle crash costs; BLS protective services; Home Office Police Workforce Statistics (UK); RCMP fleet management (CA); EU-OSHA (EU); ABS (AU)'
+    src:'Geotab fleet telemetry PCR (n=314 US / 130 CA fleets, Apr 2026); NETS 2019 / FMCSA / NWRA (US costs); CRISP 2018 / IBC (CA costs); DfT TAG 2023 / HSE waste transport guidance (UK costs); SafetyCube D3.2 / Eurostat ESAW NACE E (EU costs); BITRE 2022 / Safe Work Australia (AU costs)'
   },
   'Student Transportation': {
     miles:{ US:12000, CA:24900, EU:15500, UK:15000, AU:11200 },
     mpg:7,
-    ir:{ US:0.06, CA:0.05, EU:0.10, UK:0.07, AU:0.07 },
+    ir:{ US:0.0834, CA:0.0801, EU:0.1133, UK:0.0770, AU:0.0579 },
     tr:{ US:0.32, CA:0.35, EU:0.12, UK:0.22, AU:0.20 },
     gas:0.10, dsl:0.80,
-    cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
-    rc:{ US:8500,  CA:7800,  EU:6300,  UK:6700,  AU:8100  },
+    cc_maj:{ US:123000, CA:111000, EU:68000, UK:84000, AU:107000 },
+    cc_min:{ US:19000,  CA:17100,  EU:7500,  UK:10000, AU:13500 },
+    maj_pct:{ US:0.15, CA:0.15, EU:0.15, UK:0.15, AU:0.15 },
+    rc:{ US:8500, CA:7800, EU:6300, UK:6700, AU:8100 },
+    def:{fi:3, cr:8, ri:10},
     desc:'School bus routes and transit — seasonal schedules, tight stop density, and strict regulatory standards; among the lowest incident rates in fleet.',
-    src:'NHTSA; BLS transit JOLTS; NAPT; School Bus Ontario (CA); Zemo Partnership (UK); ERSO (EU); Bus Industry Confederation (AU)'
+    src:'Geotab fleet telemetry PCR (n=752 US / 179 CA fleets, Apr 2026; EU n<50 — regional avg used); NHTSA HS813731 / NASDPTS (US costs); CRISP 2018 (CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 (EU costs); BITRE 2022 / NRSPP (AU costs)'
   },
   'Specialty Trades': {
     miles:{ US:26000, CA:21700, EU:18600, UK:15500, AU:21700 },
     mpg:18,
-    ir:{ US:0.12, CA:0.18, EU:0.16, UK:0.09, AU:0.13 },
+    ir:{ US:0.0715, CA:0.0720, EU:0.0896, UK:0.0742, AU:0.0537 },
     tr:{ US:0.28, CA:0.28, EU:0.18, UK:0.30, AU:0.15 },
     gas:0.60, dsl:0.30,
-    cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
-    rc:{ US:9500,  CA:8700,  EU:7000,  UK:7500,  AU:9100  },
+    cc_maj:{ US:93000,  CA:84000, EU:45000, UK:52000, AU:63000 },
+    cc_min:{ US:14000,  CA:12600, EU:5000,  UK:6500,  AU:8500  },
+    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20 },
+    rc:{ US:9500, CA:8700, EU:7000, UK:7500, AU:9100 },
+    def:{fi:4, cr:10, ri:10},
     desc:'Electricians, plumbers, HVAC, and mechanical contractors — cargo vans and pickups dispatched across residential and commercial job sites.',
-    src:'NSC; BLS construction trades; DfT van statistics (UK); Platform for Electromobility/T&E (EU); EURES 2024 (EU); NRCan (CA); SWA (AU)'
+    src:'Geotab fleet telemetry PCR (n=2,682 US / 728 CA / 160 UK / 221 EU / 267 AU fleets, Apr 2026); NETS 2019 / NSC (US costs); CRISP 2018 (CA costs); DfT TAG 2023 / HSE (UK costs); SafetyCube D3.2 (EU costs); BITRE 2022 (AU costs)'
   },
   'Property Maintenance': {
     miles:{ US:18000, CA:15500, EU:13700, UK:12000, AU:15500 },
     mpg:16,
-    ir:{ US:0.10, CA:0.18, EU:0.14, UK:0.09, AU:0.10 },
+    ir:{ US:0.0794, CA:0.0790, EU:0.0957, UK:0.0845, AU:0.0528 },
     tr:{ US:0.42, CA:0.36, EU:0.22, UK:0.35, AU:0.18 },
     gas:0.65, dsl:0.25,
-    cc:{ US:48000, CA:38000, EU:31000, UK:34000, AU:37000 },
-    rc:{ US:7000,  CA:6400,  EU:5200,  UK:5600,  AU:6700  },
+    cc_maj:{ US:88000,  CA:79000, EU:42000, UK:48000, AU:59000 },
+    cc_min:{ US:13000,  CA:11700, EU:4500,  UK:6000,  AU:7800  },
+    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20 },
+    rc:{ US:7000, CA:6400, EU:5200, UK:5600, AU:6700 },
+    def:{fi:4, cr:10, ri:12},
     desc:'Landscaping, janitorial, pest control, and facility services — light trucks and vans covering tight urban and suburban territory.',
-    src:'NSC Injury Facts; BLS building/grounds maintenance; SHRM; Eurofound EU 2022 (EU); CIPD (UK); Lytx (CA); ABS Admin & Support Services (AU)'
+    src:'Geotab fleet telemetry PCR (n=1,178 US / 318 CA fleets, Apr 2026; UK/AU n<50 — regional avg used); NETS 2019 / NSC (US costs); CRISP 2018 (CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 (EU costs); BITRE 2022 (AU costs)'
   },
   'Professional Services': {
     miles:{ US:22000, CA:18600, EU:18600, UK:18000, AU:21700 },
     mpg:28,
-    ir:{ US:0.08, CA:0.12, EU:0.10, UK:0.08, AU:0.08 },
+    ir:{ US:0.0806, CA:0.0707, EU:0.0851, UK:0.0793, AU:0.0565 },
     tr:{ US:0.22, CA:0.20, EU:0.19, UK:0.30, AU:0.12 },
     gas:0.52, dsl:0.12,
-    cc:{ US:45000, CA:36000, EU:29000, UK:32000, AU:35000 },
-    rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
+    cc_maj:{ US:80000,  CA:72000, EU:38000, UK:44000, AU:53000 },
+    cc_min:{ US:11000,  CA:9900,  EU:4000,  UK:5500,  AU:7200  },
+    maj_pct:{ US:0.18, CA:0.18, EU:0.18, UK:0.18, AU:0.18 },
+    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600 },
+    def:{fi:5, cr:12, ri:20},
     desc:'Insurance adjusters, field consultants, sales representatives — predominantly passenger cars and SUVs with predictable urban/suburban routing.',
-    src:'NSC personal vehicle crash costs; BLS professional JOLTS; Platform for Electromobility EU; EMCA 2023 (EU); DfT NTS (UK); ABS Job Mobility (AU)'
+    src:'Geotab fleet telemetry PCR (n=6,007 US / 1,688 CA / 254 UK / 791 EU / 337 AU fleets, Apr 2026); NETS 2019 (US costs, direct applicability); CRISP 2018 (CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 (EU costs); BITRE 2022 (AU costs)'
   },
   'Construction': {
     miles:{ US:20000, CA:18600, EU:17400, UK:15500, AU:21700 },
     mpg:8,
-    ir:{ US:0.14, CA:0.20, EU:0.25, UK:0.11, AU:0.13 },
+    ir:{ US:0.0667, CA:0.0612, EU:0.0841, UK:0.0761, AU:0.0538 },
     tr:{ US:0.32, CA:0.30, EU:0.20, UK:0.35, AU:0.21 },
     gas:0.10, dsl:0.85,
-    cc:{ US:95000, CA:76000, EU:62000, UK:67000, AU:74000 },
-    rc:{ US:12500, CA:11500, EU:9200,  UK:9900,  AU:11900 },
+    cc_maj:{ US:148000, CA:133000, EU:88000, UK:107000, AU:122000 },
+    cc_min:{ US:24000,  CA:21600,  EU:10000, UK:13000,  AU:16000 },
+    maj_pct:{ US:0.25, CA:0.25, EU:0.25, UK:0.25, AU:0.25 },
+    rc:{ US:12500, CA:11500, EU:9200, UK:9900, AU:11900 },
+    def:{fi:3, cr:8, ri:10},
     desc:'Material hauling, equipment transport, and site support — heavy-duty Class 5–8 trucks operating in high-risk construction zone environments.',
-    src:'FMCSA; CPWR; ATRI; Eurostat ESAW NACE F (EU); CEDEFOP 2023 (EU); BuildForce Canada; DfT van statistics (UK); ScaleSuite (AU)'
+    src:'Geotab fleet telemetry PCR (n=1,811 US / 1,125 CA / 135 UK / 605 EU / 229 AU fleets, Apr 2026); FMCSA / CPWR / OSHA (US costs); CRISP 2018 / Energy Safety Canada (CA costs); DfT TAG 2023 / HSE construction data (UK costs); SafetyCube D3.2 / Eurostat ESAW NACE F (EU costs); BITRE 2022 / Safe Work Australia (AU costs)'
   },
   'Utilities': {
     miles:{ US:20000, CA:18600, EU:15500, UK:18000, AU:17100 },
     mpg:12,
-    ir:{ US:0.10, CA:0.17, EU:0.18, UK:0.10, AU:0.09 },
+    ir:{ US:0.0661, CA:0.0610, EU:0.0849, UK:0.0708, AU:0.0504 },
     tr:{ US:0.18, CA:0.08, EU:0.12, UK:0.27, AU:0.10 },
     gas:0.25, dsl:0.67,
-    cc:{ US:65000, CA:52000, EU:43000, UK:46000, AU:51000 },
-    rc:{ US:12000, CA:11000, EU:8900,  UK:9500,  AU:11500 },
+    cc_maj:{ US:135000, CA:121500, EU:78000, UK:95000, AU:110000 },
+    cc_min:{ US:20000,  CA:18000,  EU:8500,  UK:11000, AU:14000 },
+    maj_pct:{ US:0.22, CA:0.22, EU:0.22, UK:0.22, AU:0.22 },
+    rc:{ US:12000, CA:11000, EU:8900, UK:9500, AU:11500 },
+    def:{fi:4, cr:10, ri:10},
     desc:'Electric, gas, water, and telecom field crews — service trucks with aerial lifts and equipment pods responding to faults and planned maintenance.',
-    src:'NSC; EEI utility workforce survey; SHRM; CIPD (UK); Eurostat ESAW NACE E (EU); Mercer Canada; ABS Job Mobility (AU)'
+    src:'Geotab fleet telemetry PCR (n=592 US / 261 CA fleets, Apr 2026; UK/AU n<50 — regional avg used); NETS 2019 / EEI (US costs); CRISP 2018 (CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 / Eurostat ESAW NACE E (EU costs); BITRE 2022 (AU costs)'
   },
   'Oil & Gas': {
     miles:{ US:38000, CA:34200, EU:21700, UK:20000, AU:21700 },
     mpg:14,
-    ir:{ US:0.16, CA:0.25, EU:0.22, UK:0.10, AU:0.12 },
+    ir:{ US:0.0561, CA:0.0517, EU:0.0714, UK:0.0705, AU:0.0457 },
     tr:{ US:0.42, CA:0.35, EU:0.15, UK:0.27, AU:0.14 },
     gas:0.28, dsl:0.67,
-    cc:{ US:85000, CA:68000, EU:55000, UK:60000, AU:66000 },
+    cc_maj:{ US:215000, CA:193500, EU:117000, UK:142000, AU:165000 },
+    cc_min:{ US:28000,  CA:25200,  EU:12000,  UK:15000,  AU:18000 },
+    maj_pct:{ US:0.30, CA:0.30, EU:0.30, UK:0.30, AU:0.30 },
     rc:{ US:14000, CA:12900, EU:10300, UK:11100, AU:13400 },
+    def:{fi:3, cr:7, ri:8},
     desc:'Oilfield services, pipeline inspection, and exploration support — high mileage across remote terrain with fatigue and adverse-road risk.',
-    src:'FMCSA; IADC HSE reports; BLS extraction JOLTS; CAPP (CA); Eurostat ESAW NACE B (EU); Silverstone Recruitment (AU)'
+    src:'Geotab fleet telemetry PCR (n=556 US / 216 CA / 62 EU / 111 AU fleets, Apr 2026); FMCSA / IOGP 2024 / Energy Safety Canada — transportation = 41% of O&G fatalities (US/CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 / IOGP Europe (EU costs); BITRE 2022 / NRSPP (AU costs)'
   },
   'Transportation & Logistics': {
     miles:{ US:55000, CA:74600, EU:68400, UK:75000, AU:49300 },
     mpg:7,
-    ir:{ US:0.12, CA:0.09, EU:0.35, UK:0.10, AU:0.14 },
+    ir:{ US:0.0640, CA:0.0572, EU:0.1040, UK:0.0978, AU:0.0537 },
     tr:{ US:0.58, CA:0.60, EU:0.18, UK:0.30, AU:0.22 },
     gas:0.10, dsl:0.83,
-    cc:{ US:125000, CA:100000, EU:82000, UK:88000, AU:97000 },
-    rc:{ US:15000,  CA:13800,  EU:11000, UK:11900, AU:14300 },
+    cc_maj:{ US:175000, CA:157500, EU:107000, UK:130000, AU:145000 },
+    cc_min:{ US:32000,  CA:28800,  EU:12500,  UK:15500,  AU:19000 },
+    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20 },
+    rc:{ US:15000, CA:13800, EU:11000, UK:11900, AU:14300 },
+    def:{fi:1, cr:5, ri:6},
     desc:'Regional and long-haul freight, dedicated fleet delivery — Class 7–8 trucks with high annual mileage and industry-leading turnover rates.',
-    src:'ATA; ATRI 2023; FMCSA; ERSO Facts & Figures 2023 (EU); IRU Truck Driver Barometer 2024 (EU); Trucking HR Canada; DfT Road Freight Statistics (UK); ABS SMVU 2020 (AU)'
+    src:'Geotab fleet telemetry PCR (n=8,071 US / 5,132 CA / 742 UK / 2,755 EU / 320 AU fleets, Apr 2026); FMCSA 2024 / ATRI (US costs); CRISP 2018 / CTA (CA costs); DfT TAG 2023 / Logistics UK (UK costs); SafetyCube D3.2 / IRU / ETSC (EU costs); BITRE 2022 / NTC (AU costs)'
   },
   'Other': {
     miles:{ US:20000, CA:12400, EU:12400, UK:15000, AU:15500 },
     mpg:18,
-    ir:{ US:0.10, CA:0.10, EU:0.12, UK:0.09, AU:0.10 },
+    ir:{ US:0.0723, CA:0.0636, EU:0.0878, UK:0.0861, AU:0.0542 },
     tr:{ US:0.25, CA:0.15, EU:0.14, UK:0.20, AU:0.12 },
     gas:0.52, dsl:0.30,
-    cc:{ US:55000, CA:44000, EU:36000, UK:39000, AU:43000 },
-    rc:{ US:10000, CA:9200,  EU:7400,  UK:7900,  AU:9600  },
+    cc_maj:{ US:97000,  CA:87000, EU:53000, UK:65000, AU:75000 },
+    cc_min:{ US:14000,  CA:12600, EU:6000,  UK:7500,  AU:9500  },
+    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20 },
+    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600 },
+    def:{fi:5, cr:12, ri:15},
     desc:'Mixed or non-classified fleet — applies industry-average benchmarks across fuel type, mileage, collision risk, and driver turnover.',
-    src:'NSC; BLS all-industry JOLTS; SHRM; regional government and industry survey averages'
+    src:'Geotab fleet telemetry PCR (n=25,460 US / 11,526 CA / 1,609 UK+AU / 5,548 EU fleets, Apr 2026); NETS 2019 / NSC all-industry (US costs); CRISP 2018 (CA costs); DfT TAG 2023 / HSE (UK costs); SafetyCube D3.2 / EC Road Safety Observatory (EU costs); BITRE 2022 / NRSPP (AU costs)'
   }
 };
 const FLEET_NAMES = Object.keys(FD);
@@ -991,7 +1009,7 @@ let S = {
   drivers:50,
   gas:0.50, dsl:0.30,
   gp:3.40, dp:3.80,
-  fi:0.01, cr:0.05, ri:0.05
+  fi:0.05, cr:0.12, ri:0.15
 };
 
 /* ── Calc ──────────────────────────────────────────────────────────── */
@@ -1001,17 +1019,25 @@ function calc() {
   const gp_pg = S.gp * reg.volFactor;
   const dp_pg = S.dp * reg.volFactor;
   const blended = S.gas * gp_pg + S.dsl * dp_pg;
-  const miles = f.miles[reg.key];
+  const miles = f.miles[reg.key];                        // miles per driver/year
+  const miles_km = miles * 1.60934;                       // always convert miles → km for PCR calc
   const fuel = S.drivers * (miles / f.mpg) * blended * S.fi;
-  const cc_local = f.cc[reg.key] * reg.rate;
+
+  // Collision: Wellington formula — PCR (crashes per 100k km) × fleet km / 100,000
+  const fleet_km_per_100k = (S.drivers * miles_km) / 100000;
+  const pcr = f.ir[reg.key];                            // crashes per 100,000 km
+  const mp  = f.maj_pct[reg.key];
+  const blended_cc_usd = mp * f.cc_maj[reg.key] + (1 - mp) * f.cc_min[reg.key];
+  const blended_cc_local = blended_cc_usd * reg.rate;
+  const coll = fleet_km_per_100k * pcr * blended_cc_local * S.cr;
+
   const rc_local = f.rc[reg.key] * reg.rate;
-  const coll = S.drivers * f.ir[reg.key] * cc_local * S.cr;
   const ret  = S.drivers * f.tr[reg.key] * S.ri * 0.5 * rc_local;
-  const cost = S.drivers * 15 * 12 * reg.rate;
+  const cost = S.drivers * reg.pp * 12;
   const gross = fuel + coll + ret;
   const net   = gross - cost;
   const roi   = cost > 0 ? Math.round((gross - cost) / cost * 100) : 0;
-  const pb    = gross > cost ? cost / (gross - cost) * 12 : null;
+  const pb    = gross > cost ? cost * 12 / gross : null;
   return {fuel, coll, ret, gross, cost, net, roi, pb};
 }
 
@@ -1044,8 +1070,7 @@ function render() {
   setTxt('cost-val',   '−' + money(r.cost));
   el('roi-fig').style.color = r.roi >= 0 ? '#43D17A' : '#EF5350';
 
-  const suffix = reg.code !== 'USD' ? ' equiv.' : '';
-  el('prog-cost-lbl').textContent = `Program cost (${reg.sym}15/driver/month${suffix})`;
+  el('prog-cost-lbl').textContent = `Program cost (${reg.sym}${reg.pp}/driver/month)`;
 
   const g = Math.round(S.gas * 100), d = Math.round(S.dsl * 100);
   const ev = Math.max(0, 100 - g - d);
@@ -1084,22 +1109,6 @@ function onRegion(regionName) {
   render();
 }
 
-/* ── Conservative mode ─────────────────────────────────────────────── */
-const MODES = {
-  standard:     { fi:3,  cr:7,  ri:7  },
-  conservative: { fi:1,  cr:5,  ri:5  }
-};
-function setMode(mode) {
-  const m = MODES[mode];
-  S.fi = m.fi / 100; S.cr = m.cr / 100; S.ri = m.ri / 100;
-  el('fuel-imp').value = m.fi;
-  el('coll-red').value = m.cr;
-  el('ret-imp').value  = m.ri;
-  el('mode-std').classList.toggle('active', mode === 'standard');
-  el('mode-con').classList.toggle('active', mode === 'conservative');
-  el('cons-indicator').style.display = mode === 'conservative' ? 'block' : 'none';
-  render();
-}
 
 /* ── Count sync ────────────────────────────────────────────────────── */
 function syncCounts() {
@@ -1208,6 +1217,15 @@ function onFleet(name) {
   el('diesel-sl').value = Math.round(f.dsl * 100);
   el('ev-sl').value     = Math.max(0, 100 - Math.round(f.gas*100) - Math.round(f.dsl*100));
   el('fleet-desc').textContent = f.desc;
+  // Load segment-specific improvement defaults
+  if (f.def) {
+    S.fi = f.def.fi / 100;
+    S.cr = f.def.cr / 100;
+    S.ri = f.def.ri / 100;
+    el('fuel-imp').value = f.def.fi;
+    el('coll-red').value = f.def.cr;
+    el('ret-imp').value  = f.def.ri;
+  }
   syncCounts(); render();
 }
 
@@ -1237,7 +1255,9 @@ function renderMethTable() {
     const eff = reg.effLabel === 'MPG'
       ? f.mpg
       : (235.214 / f.mpg).toFixed(1);
-    const cc_local = Math.round(f.cc[reg.key] * reg.rate).toLocaleString('en-US');
+    const mp = f.maj_pct[reg.key];
+    const blended_cc_usd = mp * f.cc_maj[reg.key] + (1 - mp) * f.cc_min[reg.key];
+    const cc_local = Math.round(blended_cc_usd * reg.rate).toLocaleString('en-US');
     const rc_local = Math.round(f.rc[reg.key] * reg.rate).toLocaleString('en-US');
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -1246,7 +1266,7 @@ function renderMethTable() {
       <td class="num">${dist}</td>
       <td class="num">${eff}</td>
       <td class="num">${reg.sym}${cc_local}</td>
-      <td class="num">${Math.round(f.ir[reg.key]*100)}%</td>
+      <td class="num">${f.ir[reg.key].toFixed(4)}</td>
       <td class="num">${Math.round(f.tr[reg.key]*100)}%</td>
       <td class="num">${reg.sym}${rc_local}</td>
       <td class="num">${Math.round(f.gas*100)}%</td>
@@ -1275,11 +1295,10 @@ function init() {
   el('ev-count').addEventListener('change',     e => onEVCount(e.target.value));
   el('gas-price').addEventListener('input',   e => { S.gp = parseFloat(e.target.value) || 3.40; render(); });
   el('diesel-price').addEventListener('input',e => { S.dp = parseFloat(e.target.value) || 3.80; render(); });
-  el('fuel-imp').addEventListener('input',    e => { S.fi = (parseFloat(e.target.value) || 1) / 100; render(); });
-  el('coll-red').addEventListener('input',    e => { S.cr = (parseFloat(e.target.value) || 5) / 100; render(); });
-  el('ret-imp').addEventListener('input',     e => { S.ri = (parseFloat(e.target.value) || 5) / 100; render(); });
+  el('fuel-imp').addEventListener('input',    e => { S.fi = (parseFloat(e.target.value) || 3)  / 100; render(); });
+  el('coll-red').addEventListener('input',    e => { S.cr = (parseFloat(e.target.value) || 10) / 100; render(); });
+  el('ret-imp').addEventListener('input',     e => { S.ri = (parseFloat(e.target.value) || 10) / 100; render(); });
 
-  setMode('conservative');
   renderMethTable();
   onFleet('Other');
 }

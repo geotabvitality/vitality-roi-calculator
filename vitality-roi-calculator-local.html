@@ -146,6 +146,8 @@ p  { font-size: 1.6rem; line-height: 1.6; }
 }
 .region-tab:hover  { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
 .region-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.region-select-wrap { flex: 1; max-width: 34rem; }
+.region-select-wrap select { height: 4.2rem; }
 
 /* ── Form inputs ────────────────────────────────────────────────────── */
 .field { display: flex; flex-direction: column; gap: 0.4rem; }
@@ -311,6 +313,12 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.18); }
 .cost-lbl  { font-size: 1.15rem; color: var(--text-muted); }
 .cost-val  { font-size: 1.25rem; color: var(--text-muted); }
 
+/* Prevent long currency values (e.g. Mex$) from squishing against labels */
+.net-row, .sav-row, .total-row, .cost-row { gap: 1.2rem; }
+.net-lbl, .sav-name, .total-lbl, .cost-lbl { min-width: 0; }
+.net-val, .sav-val, .total-val, .cost-val { white-space: nowrap; flex-shrink: 0; text-align: right; }
+.net-val { font-size: 2rem; }
+
 .results-footer {
   font-size: 0.95rem; color: var(--border-mid); text-align: center;
   padding: 1rem 1.6rem; border-top: 1px solid var(--bg-light); line-height: 1.5;
@@ -445,12 +453,17 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
       <div class="card region-card">
         <div class="region-row">
           <span class="region-label">Region</span>
-          <div class="region-tabs">
-            <button class="region-tab active" data-region="United States">🇺🇸 United States</button>
-            <button class="region-tab" data-region="Canada">🇨🇦 Canada</button>
-            <button class="region-tab" data-region="European Union">🇪🇺 EU</button>
-            <button class="region-tab" data-region="United Kingdom">🇬🇧 UK</button>
-            <button class="region-tab" data-region="Australia">🇦🇺 Australia</button>
+          <div class="mui-input select-wrap region-select-wrap">
+            <select id="region-select">
+              <option value="United States">🇺🇸 United States</option>
+              <option value="Canada">🇨🇦 Canada</option>
+              <option value="W & N Europe">🇪🇺 W &amp; N Europe</option>
+              <option value="S & E Europe">🇪🇺 S &amp; E Europe</option>
+              <option value="United Kingdom">🇬🇧 United Kingdom</option>
+              <option value="Australia">🇦🇺 Australia</option>
+              <option value="Mexico">🇲🇽 Mexico</option>
+              <option value="South Africa">🇿🇦 South Africa</option>
+            </select>
           </div>
         </div>
       </div>
@@ -697,7 +710,7 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
             </tr></thead>
             <tbody id="meth-tbody"></tbody>
           </table>
-          <p class="tbl-note">PCR (Predictive Collision Rate) = model-predicted crashes per 100,000 km driven, sourced from Geotab fleet telemetry across 44,000+ commercial fleets across 5 regions (Apr 2026). Collision savings = PCR × fleet km / 100,000 × blended collision cost × improvement %. Blended collision cost = weighted average of major (injury) and minor (PDO) costs by industry mix. 50% unavoidable churn factor applied to retention savings. Costs are employer-facing (repair, medical, legal, downtime, admin) — not societal/QALY values. Regional costs sourced independently: NETS/FMCSA (US), CRISP/IBC (CA), DfT TAG 2023/HSE (UK), SafetyCube/ETSC (EU), BITRE/NRSPP (AU).</p>
+          <p class="tbl-note">PCR (Predictive Collision Rate) = model-predicted crashes per 100,000 km driven, sourced from Geotab fleet telemetry across 44,000+ commercial fleets across 5 regions (Apr 2026). Collision savings = PCR × fleet km / 100,000 × blended collision cost × improvement %. Blended collision cost = weighted average of major (injury) and minor (PDO) costs by industry mix. 50% unavoidable churn factor applied to retention savings. Costs are employer-facing (repair, medical, legal, downtime, admin) — not societal/QALY values. Regional costs sourced independently: NETS/FMCSA (US), CRISP/IBC (CA), DfT TAG 2023/HSE (UK), SafetyCube/ETSC (EU), BITRE/NRSPP (AU). <strong>S &amp; E Europe, Mexico, and South Africa</strong> baselines are derived by regional analog: mileage, PCR, turnover and severity mix are proxied from the nearest telemetry region (S&amp;E Europe ← W&amp;N Europe; Mexico &amp; South Africa ← US), and collision/replacement costs are scaled to local cost levels (S&amp;E Europe ≈0.55–0.65× W&amp;N Europe; Mexico ≈0.45–0.50× US; South Africa ≈0.25–0.30× US) using ETSC/SafetyCube (EU), INEGI/CANACAR (MX), and RTMC/RFA (ZA). These are illustrative estimates, not regional telemetry.</p>
         </div>
       </div>
     </div>
@@ -753,11 +766,11 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
           <ul class="src-list">
             <li><span class="src-org"><a href="https://injuryfacts.nsc.org/" target="_blank">NSC Injury Facts 2023</a></span><span class="src-desc">National Safety Council — commercial vehicle crash costs, injury severity, and fleet incident benchmarks</span></li>
             <li><span class="src-org"><a href="https://www.fmcsa.dot.gov/safety/data-and-statistics" target="_blank">FMCSA Safety Data</a></span><span class="src-desc">Federal Motor Carrier Safety Administration — large truck/bus crash statistics and crash cost models</span></li>
-            <li><span class="src-org"><a href="https://truckingresearch.org/category/operational-costs/" target="_blank">ATRI Operational Costs 2023</a></span><span class="src-desc">American Transportation Research Institute — fuel economy (Class 8: 6.4 MPG avg), OTR mileage benchmarks</span></li>
-            <li><span class="src-org"><a href="https://www.trucking.org/news-insights/driver-shortage" target="_blank">ATA Driver Shortage Report 2023</a></span><span class="src-desc">American Trucking Associations — carrier turnover rates, driver replacement and training cost data</span></li>
+            <li><span class="src-org"><a href="https://truckingresearch.org/research/" target="_blank">ATRI Operational Costs 2023</a></span><span class="src-desc">American Transportation Research Institute — fuel economy (Class 8: 6.4 MPG avg), OTR mileage benchmarks</span></li>
+            <li><span class="src-org"><a href="https://www.trucking.org/economics-and-industry-data" target="_blank">ATA Driver Shortage Report 2023</a></span><span class="src-desc">American Trucking Associations — carrier turnover rates, driver replacement and training cost data</span></li>
             <li><span class="src-org"><a href="https://www.bls.gov/jlt/" target="_blank">BLS JOLTS / Occupational Outlook</a></span><span class="src-desc">Bureau of Labor Statistics — occupation-specific turnover rates and wage data by industry sector</span></li>
             <li><span class="src-org"><a href="https://www.eia.gov/petroleum/gasdiesel/" target="_blank">EIA Retail Fuel Prices</a></span><span class="src-desc">Energy Information Administration — US average fuel prices, updated Jun 2026</span></li>
-            <li><span class="src-org"><a href="https://www.shrm.org/topics-tools/research/cost-of-turnover" target="_blank">SHRM Recruitment Cost Study</a></span><span class="src-desc">Society for Human Resource Management — driver replacement cost methodology</span></li>
+            <li><span class="src-org"><a href="https://www.shrm.org/" target="_blank">SHRM Recruitment Cost Study</a></span><span class="src-desc">Society for Human Resource Management — driver replacement cost methodology</span></li>
             <li><span class="src-org">Industry-specific (US)</span><span class="src-desc">NWRA (waste &amp; recycling), IACP (police/emergency), NHTSA (student transport), APWA (public works), EEI (utilities), IADC (oil &amp; gas), CPWR (construction)</span></li>
           </ul>
 
@@ -772,7 +785,7 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
             <li><span class="src-org"><a href="https://www.lytx.com/guide/annual-risk-and-collision-analysis" target="_blank">Lytx Annual Risk &amp; Collision Analysis</a></span><span class="src-desc">Commercial fleet incident rates by industry segment; relative risk ranking across sectors</span></li>
           </ul>
 
-          <div class="src-region-hdr">🇪🇺 European Union</div>
+          <div class="src-region-hdr">🇪🇺 W &amp; N Europe</div>
           <ul class="src-list">
             <li><span class="src-org"><a href="https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Accidents_at_work_-_statistics_by_economic_activity" target="_blank">Eurostat ESAW 2023</a></span><span class="src-desc">European Statistics on Accidents at Work — non-fatal incidence rates per 100,000 workers by NACE economic sector; primary basis for EU incident rates</span></li>
             <li><span class="src-org"><a href="https://road-safety.transport.ec.europa.eu/system/files/2023-02/ff_buses_hgv_20230213.pdf" target="_blank">ERSO Facts &amp; Figures — HGV/Buses 2023</a></span><span class="src-desc">European Road Safety Observatory — HGV annual km average 110,000 km; HGV involvement in EU road fatalities</span></li>
@@ -781,6 +794,16 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
             <li><span class="src-org"><a href="https://www.cedefop.europa.eu/en/data-insights/drivers-and-vehicle-operators-skills-opportunities-and-challenges-2023-update" target="_blank">CEDEFOP 2023 — Drivers &amp; Vehicle Operators</a></span><span class="src-desc">EU skills outlook for transport occupations; construction and trades turnover benchmarks</span></li>
             <li><span class="src-org"><a href="https://www.ela.europa.eu/en/publications/labour-shortages-and-surpluses-europe-2024" target="_blank">ELA Labour Shortages 2024</a></span><span class="src-desc">European Labour Authority — shortage occupations by sector across EU member states; basis for trades and construction turnover</span></li>
             <li><span class="src-org"><a href="https://www.eurofound.europa.eu/en/publications/all/eu-road-freight-transport-sector-work-and-employment-conditions" target="_blank">Eurofound — EU Road Freight Transport Sector</a></span><span class="src-desc">Working conditions, employment structure, and churn in EU freight; basis for T&amp;L turnover</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇪🇺 S &amp; E Europe</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en" target="_blank">Eurostat — Weekly Oil Bulletin</a></span><span class="src-desc">Official weekly petrol/diesel pump prices for all EU member states; basis for S&amp;E Europe fuel prices (regional avg ~5–12% below Western Europe)</span></li>
+            <li><span class="src-org"><a href="https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Accidents_at_work_-_statistics_by_economic_activity" target="_blank">Eurostat ESAW</a></span><span class="src-desc">European Statistics on Accidents at Work — non-fatal incidence by NACE sector; basis for relative incident risk across S&amp;E Europe segments</span></li>
+            <li><span class="src-org"><a href="https://etsc.eu/projects/pin/" target="_blank">ETSC Road Safety Performance Index</a></span><span class="src-desc">European Transport Safety Council — cross-country collision-cost benchmarking; basis for the ~0.7× Western-Europe collision-cost scaling</span></li>
+            <li><span class="src-org"><a href="https://www.roadsafety-dss.eu/" target="_blank">SafetyCube — Road Safety DSS</a></span><span class="src-desc">EU-funded database of monetised road-casualty costs by country; supports lower injury/liability costs in Southern &amp; Eastern Europe</span></li>
+            <li><span class="src-org"><a href="https://www.iru.org/resources/iru-library" target="_blank">IRU Driver Shortage Reports</a></span><span class="src-desc">International Road Transport Union — European truck-driver shortage and turnover; basis for transport-sector retention assumptions</span></li>
+            <li><span class="src-org"><a href="https://www.acea.auto/publication/" target="_blank">ACEA Vehicles in Use</a></span><span class="src-desc">European Automobile Manufacturers' Association — LCV/HGV fleet and mileage statistics for Europe</span></li>
           </ul>
 
           <div class="src-region-hdr">🇬🇧 United Kingdom</div>
@@ -801,6 +824,24 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
             <li><span class="src-org"><a href="https://www.tac.vic.gov.au/road-safety/road-users/drivers/fleet-safety" target="_blank">TAC Victoria — Fleet Safety</a></span><span class="src-desc">Transport Accident Commission — AU fleet collision baseline across all company cars; used to validate relative PCR rankings across AU segments</span></li>
             <li><span class="src-org"><a href="https://www.scalesuite.com.au/resources/australian-employee-turnover-statistics-2026" target="_blank">ScaleSuite — AU Employee Turnover Statistics 2026</a></span><span class="src-desc">Industry turnover benchmarks including construction (21% annual average)</span></li>
           </ul>
+
+          <div class="src-region-hdr">🇲🇽 Mexico</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://www.inegi.org.mx/temas/accidentes/" target="_blank">INEGI — Accidentes de Tránsito (ATUS)</a></span><span class="src-desc">Instituto Nacional de Estadística y Geografía — national traffic-accident counts and severity mix; basis for Mexico collision severity (maj_pct) and ENOE labour data</span></li>
+            <li><span class="src-org"><a href="https://www.gob.mx/cre" target="_blank">CRE / Comisión Nacional de Energía</a></span><span class="src-desc">Regulator of Mexico's liberalized fuel market; official gasoline/diesel pricing (Magna MXN 23.78/L, diesel MXN 27.08/L)</span></li>
+            <li><span class="src-org"><a href="https://canacar.com.mx/" target="_blank">CANACAR</a></span><span class="src-desc">Cámara Nacional del Autotransporte de Carga — truck-driver shortage (50,000+ deficit), fleet utilization and turnover context</span></li>
+            <li><span class="src-org"><a href="https://www.imt.mx/" target="_blank">IMT — Instituto Mexicano del Transporte</a></span><span class="src-desc">Transport research arm of SICT — vehicle-km, fleet, and road-freight statistics; basis for Mexico annual mileage</span></li>
+            <li><span class="src-org"><a href="https://www.gob.mx/stps" target="_blank">STPS</a></span><span class="src-desc">Secretaría del Trabajo y Previsión Social — wages and employment/turnover context by sector</span></li>
+          </ul>
+
+          <div class="src-region-hdr">🇿🇦 South Africa</div>
+          <ul class="src-list">
+            <li><span class="src-org"><a href="https://www.rtmc.co.za/index.php/publications/reports/cost-of-crashes" target="_blank">RTMC — Cost of Crashes / State of Road Safety</a></span><span class="src-desc">Road Traffic Management Corporation — national crash counts, severity split and monetised crash cost; anchor for South Africa collision-cost basis</span></li>
+            <li><span class="src-org"><a href="https://www.cefgroup.co.za" target="_blank">Central Energy Fund (CEF)</a></span><span class="src-desc">Publishes South Africa's regulated monthly fuel-price basis for the DMRE (petrol 95 R25.67/L, diesel R27.50/L; shown in USD equivalent)</span></li>
+            <li><span class="src-org"><a href="https://www.rfa.co.za" target="_blank">RFA — Road Freight Association</a></span><span class="src-desc">Road-freight operating-cost models, linehaul mileage, and structural driver-shortage / retention commentary</span></li>
+            <li><span class="src-org"><a href="https://www.statssa.gov.za" target="_blank">Statistics South Africa</a></span><span class="src-desc">StatsSA — Land Transport Survey (freight tonne-km), labour and CPI data</span></li>
+            <li><span class="src-org"><a href="https://aa.co.za/fuel-pricing/" target="_blank">AA South Africa</a></span><span class="src-desc">Automobile Association — fuel-price tracking and vehicle operating-cost rate tables</span></li>
+          </ul>
         </div>
       </div>
     </div>
@@ -814,9 +855,12 @@ footer { background: var(--navy-deep); padding: 5.2rem 3.2rem; color: rgba(255,2
 const REGIONS = {
   'United States':  { sym:'$',   code:'USD', key:'US', rate:1.00,  pp:15.00, gp:3.40, dp:3.80, perVol:'gal', volFactor:1,       perDist:'mi',  distFactor:1,       effLabel:'MPG',     fuelNote:'US avg, Jun 2026 (EIA)' },
   'Canada':         { sym:'CA$', code:'CAD', key:'CA', rate:1.36,  pp:15.00, gp:1.65, dp:1.85, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'CA avg, Jun 2026 (NRC)' },
-  'European Union': { sym:'€',   code:'EUR', key:'EU', rate:0.92,  pp:13.75, gp:1.65, dp:1.55, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'EU avg, Jun 2026 (Eurostat)' },
+  'W & N Europe':   { sym:'€',   code:'EUR', key:'EU', rate:0.88,  pp:13.75, gp:1.65, dp:1.55, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'W&N Europe avg, Jun 2026 (Eurostat)' },
+  'S & E Europe':   { sym:'€',   code:'EUR', key:'SEE',rate:0.88,  pp:9.75,  gp:1.65, dp:1.62, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'S&E Europe avg, 2026 (Eurostat)' },
   'United Kingdom': { sym:'£',   code:'GBP', key:'UK', rate:0.79,  pp:9.75,  gp:1.48, dp:1.52, perVol:'L',   volFactor:3.78541, perDist:'mi',  distFactor:1,       effLabel:'MPG',     fuelNote:'UK avg, Jun 2026 (DESNZ)' },
   'Australia':      { sym:'A$',  code:'AUD', key:'AU', rate:1.54,  pp:15.00, gp:2.10, dp:2.05, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'AU avg, Jun 2026 (ACCC)' },
+  'Mexico':         { sym:'Mex$',code:'MXN', key:'MX', rate:17.40, pp:195,   gp:23.78,dp:27.08,perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'MX avg, 2026 (CRE/Pemex)' },
+  'South Africa':   { sym:'$',   code:'USD', key:'ZA', rate:1.00,  pp:9.15,  gp:1.56, dp:1.67, perVol:'L',   volFactor:3.78541, perDist:'km',  distFactor:1.60934, effLabel:'L/100km', fuelNote:'ZA avg, 2026 (DMRE) — USD equiv' },
 };
 
 /* ── Fleet data ────────────────────────────────────────────────────── */
@@ -833,169 +877,169 @@ const REGIONS = {
 //      collision_savings = expected_collisions × blended_cost × cr (improvement %)
 const FD = {
   'Government': {
-    miles:{ US:20000, CA:12400, EU:12400, UK:12000, AU:14300 },
+    miles:{ US:20000, CA:12400, EU:12400, UK:12000, AU:14300, SEE:12400, MX:20000, ZA:20000 },
     mpg:20,
-    ir:{ US:0.0881, CA:0.0741, EU:0.0853, UK:0.0877, AU:0.0533 },
-    tr:{ US:0.18, CA:0.08, EU:0.08, UK:0.25, AU:0.07 },
+    ir:{ US:0.0881, CA:0.0741, EU:0.0853, UK:0.0877, AU:0.0533, SEE:0.0853, MX:0.0881, ZA:0.0881 },
+    tr:{ US:0.18, CA:0.08, EU:0.08, UK:0.25, AU:0.07, SEE:0.08, MX:0.18, ZA:0.08 },
     gas:0.50, dsl:0.30,
-    cc_maj:{ US:113000, CA:102000, EU:67000, UK:82000, AU:93000 },
-    cc_min:{ US:17000,  CA:15300,  EU:7500,  UK:9500,  AU:12000 },
-    maj_pct:{ US:0.18, CA:0.18, EU:0.18, UK:0.18, AU:0.18 },
-    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600 },
+    cc_maj:{ US:113000, CA:102000, EU:67000, UK:82000, AU:93000, SEE:36800, MX:50800, ZA:28200 },
+    cc_min:{ US:17000,  CA:15300,  EU:7500,  UK:9500,  AU:12000, SEE:4100, MX:7600, ZA:4200 },
+    maj_pct:{ US:0.18, CA:0.18, EU:0.18, UK:0.18, AU:0.18, SEE:0.18, MX:0.18, ZA:0.18 },
+    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600, SEE:5000, MX:5000, ZA:3000 },
     def:{fi:6, cr:12, ri:12},
     desc:'Municipal administration, bylaw enforcement, parks and facilities — mixed sedan and light-truck fleet across varied duty cycles.',
     src:'Geotab fleet telemetry PCR (n=952 US / 376 CA fleets, Apr 2026); NETS 2019 / FMCSA (US costs); CRISP/DriveToLive 2018 (CA costs); DfT TAG 2023 / HSE (UK costs); SafetyCube D3.2 / ETSC (EU costs); BITRE 2022 / NRSPP (AU costs)'
   },
   'Public Works': {
-    miles:{ US:18000, CA:14200, EU:15500, UK:15000, AU:15500 },
+    miles:{ US:18000, CA:14200, EU:15500, UK:15000, AU:15500, SEE:15500, MX:18000, ZA:18000 },
     mpg:12,
-    ir:{ US:0.0680, CA:0.0656, EU:0.0736, UK:0.0598, AU:0.0534 },
-    tr:{ US:0.22, CA:0.10, EU:0.15, UK:0.28, AU:0.10 },
+    ir:{ US:0.0680, CA:0.0656, EU:0.0736, UK:0.0598, AU:0.0534, SEE:0.0736, MX:0.0680, ZA:0.0680 },
+    tr:{ US:0.22, CA:0.10, EU:0.15, UK:0.28, AU:0.10, SEE:0.15, MX:0.22, ZA:0.15 },
     gas:0.20, dsl:0.72,
-    cc_maj:{ US:128000, CA:115000, EU:73000, UK:88000, AU:103000 },
-    cc_min:{ US:22000,  CA:19800,  EU:8000,  UK:10500, AU:13500 },
-    maj_pct:{ US:0.22, CA:0.22, EU:0.22, UK:0.22, AU:0.22 },
-    rc:{ US:11000, CA:10100, EU:8100, UK:8700, AU:10500 },
+    cc_maj:{ US:128000, CA:115000, EU:73000, UK:88000, AU:103000, SEE:40200, MX:57600, ZA:32000 },
+    cc_min:{ US:22000,  CA:19800,  EU:8000,  UK:10500, AU:13500, SEE:4400, MX:9900, ZA:5500 },
+    maj_pct:{ US:0.22, CA:0.22, EU:0.22, UK:0.22, AU:0.22, SEE:0.22, MX:0.22, ZA:0.22 },
+    rc:{ US:11000, CA:10100, EU:8100, UK:8700, AU:10500, SEE:5500, MX:5500, ZA:3500 },
     def:{fi:4, cr:10, ri:10},
     desc:'Road maintenance, sanitation support, infrastructure repair — heavy trucks and specialized equipment with frequent roadside exposure.',
     src:'Geotab fleet telemetry PCR (n=540 US / 254 CA fleets, Apr 2026); NETS 2019 / FMCSA (US costs); CRISP/DriveToLive 2018 (CA costs); DfT TAG 2023 / HSE (UK costs); SafetyCube D3.2 / Eurostat ESAW (EU costs); BITRE 2022 / Safe Work Australia (AU costs)'
   },
   'Waste & Recycling': {
-    miles:{ US:14000, CA:15500, EU:11200, UK:10000, AU:13000 },
+    miles:{ US:14000, CA:15500, EU:11200, UK:10000, AU:13000, SEE:11200, MX:14000, ZA:14000 },
     mpg:6,
-    ir:{ US:0.0623, CA:0.0575, EU:0.0704, UK:0.0582, AU:0.0537 },
-    tr:{ US:0.38, CA:0.35, EU:0.20, UK:0.37, AU:0.20 },
+    ir:{ US:0.0623, CA:0.0575, EU:0.0704, UK:0.0582, AU:0.0537, SEE:0.0704, MX:0.0623, ZA:0.0623 },
+    tr:{ US:0.38, CA:0.35, EU:0.20, UK:0.37, AU:0.20, SEE:0.20, MX:0.38, ZA:0.20 },
     gas:0.05, dsl:0.88,
-    cc_maj:{ US:158000, CA:142000, EU:85000, UK:104000, AU:118000 },
-    cc_min:{ US:30000,  CA:27000,  EU:9500,  UK:12000,  AU:15000 },
-    maj_pct:{ US:0.35, CA:0.35, EU:0.30, UK:0.35, AU:0.30 },
-    rc:{ US:13000, CA:11900, EU:9600, UK:10300, AU:12400 },
+    cc_maj:{ US:158000, CA:142000, EU:85000, UK:104000, AU:118000, SEE:46800, MX:71100, ZA:39500 },
+    cc_min:{ US:30000,  CA:27000,  EU:9500,  UK:12000,  AU:15000, SEE:5200, MX:13500, ZA:7500 },
+    maj_pct:{ US:0.35, CA:0.35, EU:0.30, UK:0.35, AU:0.30, SEE:0.30, MX:0.35, ZA:0.35 },
+    rc:{ US:13000, CA:11900, EU:9600, UK:10300, AU:12400, SEE:6000, MX:6500, ZA:4000 },
     def:{fi:2, cr:8, ri:10},
     desc:'Residential and commercial collection routes — heavy Class 8 vehicles with high stop frequency, backing risk, and extended engine idling.',
     src:'Geotab fleet telemetry PCR (n=314 US / 130 CA fleets, Apr 2026); NETS 2019 / FMCSA / NWRA (US costs); CRISP 2018 / IBC (CA costs); DfT TAG 2023 / HSE waste transport guidance (UK costs); SafetyCube D3.2 / Eurostat ESAW NACE E (EU costs); BITRE 2022 / Safe Work Australia (AU costs)'
   },
   'Student Transportation': {
-    miles:{ US:12000, CA:24900, EU:15500, UK:15000, AU:11200 },
+    miles:{ US:12000, CA:24900, EU:15500, UK:15000, AU:11200, SEE:15500, MX:12000, ZA:12000 },
     mpg:7,
-    ir:{ US:0.0834, CA:0.0801, EU:0.1133, UK:0.0770, AU:0.0579 },
-    tr:{ US:0.32, CA:0.35, EU:0.12, UK:0.22, AU:0.20 },
+    ir:{ US:0.0834, CA:0.0801, EU:0.1133, UK:0.0770, AU:0.0579, SEE:0.1133, MX:0.0834, ZA:0.0834 },
+    tr:{ US:0.32, CA:0.35, EU:0.12, UK:0.22, AU:0.20, SEE:0.12, MX:0.32, ZA:0.12 },
     gas:0.10, dsl:0.80,
-    cc_maj:{ US:123000, CA:111000, EU:68000, UK:84000, AU:107000 },
-    cc_min:{ US:19000,  CA:17100,  EU:7500,  UK:10000, AU:13500 },
-    maj_pct:{ US:0.15, CA:0.15, EU:0.15, UK:0.15, AU:0.15 },
-    rc:{ US:8500, CA:7800, EU:6300, UK:6700, AU:8100 },
+    cc_maj:{ US:123000, CA:111000, EU:68000, UK:84000, AU:107000, SEE:37400, MX:55400, ZA:30800 },
+    cc_min:{ US:19000,  CA:17100,  EU:7500,  UK:10000, AU:13500, SEE:4100, MX:8600, ZA:4800 },
+    maj_pct:{ US:0.15, CA:0.15, EU:0.15, UK:0.15, AU:0.15, SEE:0.15, MX:0.15, ZA:0.15 },
+    rc:{ US:8500, CA:7800, EU:6300, UK:6700, AU:8100, SEE:4000, MX:4000, ZA:2500 },
     def:{fi:3, cr:8, ri:10},
     desc:'School bus routes and transit — seasonal schedules, tight stop density, and strict regulatory standards; among the lowest incident rates in fleet.',
     src:'Geotab fleet telemetry PCR (n=752 US / 179 CA fleets, Apr 2026; EU n<50 — regional avg used); NHTSA HS813731 / NASDPTS (US costs); CRISP 2018 (CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 (EU costs); BITRE 2022 / NRSPP (AU costs)'
   },
   'Specialty Trades': {
-    miles:{ US:26000, CA:21700, EU:18600, UK:15500, AU:21700 },
+    miles:{ US:26000, CA:21700, EU:18600, UK:15500, AU:21700, SEE:18600, MX:26000, ZA:26000 },
     mpg:18,
-    ir:{ US:0.0715, CA:0.0720, EU:0.0896, UK:0.0742, AU:0.0537 },
-    tr:{ US:0.28, CA:0.28, EU:0.18, UK:0.30, AU:0.15 },
+    ir:{ US:0.0715, CA:0.0720, EU:0.0896, UK:0.0742, AU:0.0537, SEE:0.0896, MX:0.0715, ZA:0.0715 },
+    tr:{ US:0.28, CA:0.28, EU:0.18, UK:0.30, AU:0.15, SEE:0.18, MX:0.28, ZA:0.18 },
     gas:0.60, dsl:0.30,
-    cc_maj:{ US:93000,  CA:84000, EU:45000, UK:52000, AU:63000 },
-    cc_min:{ US:14000,  CA:12600, EU:5000,  UK:6500,  AU:8500  },
-    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20 },
-    rc:{ US:9500, CA:8700, EU:7000, UK:7500, AU:9100 },
+    cc_maj:{ US:93000,  CA:84000, EU:45000, UK:52000, AU:63000, SEE:24800, MX:41800, ZA:23200 },
+    cc_min:{ US:14000,  CA:12600, EU:5000,  UK:6500,  AU:8500, SEE:2800, MX:6300, ZA:3500 },
+    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20, SEE:0.20, MX:0.20, ZA:0.20 },
+    rc:{ US:9500, CA:8700, EU:7000, UK:7500, AU:9100, SEE:4500, MX:5000, ZA:3000 },
     def:{fi:4, cr:10, ri:10},
     desc:'Electricians, plumbers, HVAC, and mechanical contractors — cargo vans and pickups dispatched across residential and commercial job sites.',
     src:'Geotab fleet telemetry PCR (n=2,682 US / 728 CA / 160 UK / 221 EU / 267 AU fleets, Apr 2026); NETS 2019 / NSC (US costs); CRISP 2018 (CA costs); DfT TAG 2023 / HSE (UK costs); SafetyCube D3.2 (EU costs); BITRE 2022 (AU costs)'
   },
   'Property Maintenance': {
-    miles:{ US:18000, CA:15500, EU:13700, UK:12000, AU:15500 },
+    miles:{ US:18000, CA:15500, EU:13700, UK:12000, AU:15500, SEE:13700, MX:18000, ZA:18000 },
     mpg:16,
-    ir:{ US:0.0794, CA:0.0790, EU:0.0957, UK:0.0845, AU:0.0528 },
-    tr:{ US:0.42, CA:0.36, EU:0.22, UK:0.35, AU:0.18 },
+    ir:{ US:0.0794, CA:0.0790, EU:0.0957, UK:0.0845, AU:0.0528, SEE:0.0957, MX:0.0794, ZA:0.0794 },
+    tr:{ US:0.42, CA:0.36, EU:0.22, UK:0.35, AU:0.18, SEE:0.22, MX:0.42, ZA:0.22 },
     gas:0.65, dsl:0.25,
-    cc_maj:{ US:88000,  CA:79000, EU:42000, UK:48000, AU:59000 },
-    cc_min:{ US:13000,  CA:11700, EU:4500,  UK:6000,  AU:7800  },
-    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20 },
-    rc:{ US:7000, CA:6400, EU:5200, UK:5600, AU:6700 },
+    cc_maj:{ US:88000,  CA:79000, EU:42000, UK:48000, AU:59000, SEE:23100, MX:39600, ZA:22000 },
+    cc_min:{ US:13000,  CA:11700, EU:4500,  UK:6000,  AU:7800, SEE:2500, MX:5800, ZA:3200 },
+    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20, SEE:0.20, MX:0.20, ZA:0.20 },
+    rc:{ US:7000, CA:6400, EU:5200, UK:5600, AU:6700, SEE:3500, MX:3500, ZA:2000 },
     def:{fi:4, cr:10, ri:12},
     desc:'Landscaping, janitorial, pest control, and facility services — light trucks and vans covering tight urban and suburban territory.',
     src:'Geotab fleet telemetry PCR (n=1,178 US / 318 CA fleets, Apr 2026; UK/AU n<50 — regional avg used); NETS 2019 / NSC (US costs); CRISP 2018 (CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 (EU costs); BITRE 2022 (AU costs)'
   },
   'Professional Services': {
-    miles:{ US:22000, CA:18600, EU:18600, UK:18000, AU:21700 },
+    miles:{ US:22000, CA:18600, EU:18600, UK:18000, AU:21700, SEE:18600, MX:22000, ZA:22000 },
     mpg:28,
-    ir:{ US:0.0806, CA:0.0707, EU:0.0851, UK:0.0793, AU:0.0565 },
-    tr:{ US:0.22, CA:0.20, EU:0.19, UK:0.30, AU:0.12 },
+    ir:{ US:0.0806, CA:0.0707, EU:0.0851, UK:0.0793, AU:0.0565, SEE:0.0851, MX:0.0806, ZA:0.0806 },
+    tr:{ US:0.22, CA:0.20, EU:0.19, UK:0.30, AU:0.12, SEE:0.19, MX:0.22, ZA:0.19 },
     gas:0.52, dsl:0.12,
-    cc_maj:{ US:80000,  CA:72000, EU:38000, UK:44000, AU:53000 },
-    cc_min:{ US:11000,  CA:9900,  EU:4000,  UK:5500,  AU:7200  },
-    maj_pct:{ US:0.18, CA:0.18, EU:0.18, UK:0.18, AU:0.18 },
-    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600 },
+    cc_maj:{ US:80000,  CA:72000, EU:38000, UK:44000, AU:53000, SEE:20900, MX:36000, ZA:20000 },
+    cc_min:{ US:11000,  CA:9900,  EU:4000,  UK:5500,  AU:7200, SEE:2200, MX:5000, ZA:2800 },
+    maj_pct:{ US:0.18, CA:0.18, EU:0.18, UK:0.18, AU:0.18, SEE:0.18, MX:0.18, ZA:0.18 },
+    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600, SEE:5000, MX:5000, ZA:3000 },
     def:{fi:5, cr:12, ri:20},
     desc:'Insurance adjusters, field consultants, sales representatives — predominantly passenger cars and SUVs with predictable urban/suburban routing.',
     src:'Geotab fleet telemetry PCR (n=6,007 US / 1,688 CA / 254 UK / 791 EU / 337 AU fleets, Apr 2026); NETS 2019 (US costs, direct applicability); CRISP 2018 (CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 (EU costs); BITRE 2022 (AU costs)'
   },
   'Construction': {
-    miles:{ US:20000, CA:18600, EU:17400, UK:15500, AU:21700 },
+    miles:{ US:20000, CA:18600, EU:17400, UK:15500, AU:21700, SEE:17400, MX:20000, ZA:20000 },
     mpg:8,
-    ir:{ US:0.0667, CA:0.0612, EU:0.0841, UK:0.0761, AU:0.0538 },
-    tr:{ US:0.32, CA:0.30, EU:0.20, UK:0.35, AU:0.21 },
+    ir:{ US:0.0667, CA:0.0612, EU:0.0841, UK:0.0761, AU:0.0538, SEE:0.0841, MX:0.0667, ZA:0.0667 },
+    tr:{ US:0.32, CA:0.30, EU:0.20, UK:0.35, AU:0.21, SEE:0.20, MX:0.32, ZA:0.20 },
     gas:0.10, dsl:0.85,
-    cc_maj:{ US:148000, CA:133000, EU:88000, UK:107000, AU:122000 },
-    cc_min:{ US:24000,  CA:21600,  EU:10000, UK:13000,  AU:16000 },
-    maj_pct:{ US:0.25, CA:0.25, EU:0.25, UK:0.25, AU:0.25 },
-    rc:{ US:12500, CA:11500, EU:9200, UK:9900, AU:11900 },
+    cc_maj:{ US:148000, CA:133000, EU:88000, UK:107000, AU:122000, SEE:48400, MX:66600, ZA:37000 },
+    cc_min:{ US:24000,  CA:21600,  EU:10000, UK:13000,  AU:16000, SEE:5500, MX:10800, ZA:6000 },
+    maj_pct:{ US:0.25, CA:0.25, EU:0.25, UK:0.25, AU:0.25, SEE:0.25, MX:0.25, ZA:0.25 },
+    rc:{ US:12500, CA:11500, EU:9200, UK:9900, AU:11900, SEE:6000, MX:6000, ZA:4000 },
     def:{fi:3, cr:8, ri:10},
     desc:'Material hauling, equipment transport, and site support — heavy-duty Class 5–8 trucks operating in high-risk construction zone environments.',
     src:'Geotab fleet telemetry PCR (n=1,811 US / 1,125 CA / 135 UK / 605 EU / 229 AU fleets, Apr 2026); FMCSA / CPWR / OSHA (US costs); CRISP 2018 / Energy Safety Canada (CA costs); DfT TAG 2023 / HSE construction data (UK costs); SafetyCube D3.2 / Eurostat ESAW NACE F (EU costs); BITRE 2022 / Safe Work Australia (AU costs)'
   },
   'Utilities': {
-    miles:{ US:20000, CA:18600, EU:15500, UK:18000, AU:17100 },
+    miles:{ US:20000, CA:18600, EU:15500, UK:18000, AU:17100, SEE:15500, MX:20000, ZA:20000 },
     mpg:12,
-    ir:{ US:0.0661, CA:0.0610, EU:0.0849, UK:0.0708, AU:0.0504 },
-    tr:{ US:0.18, CA:0.08, EU:0.12, UK:0.27, AU:0.10 },
+    ir:{ US:0.0661, CA:0.0610, EU:0.0849, UK:0.0708, AU:0.0504, SEE:0.0849, MX:0.0661, ZA:0.0661 },
+    tr:{ US:0.18, CA:0.08, EU:0.12, UK:0.27, AU:0.10, SEE:0.12, MX:0.18, ZA:0.12 },
     gas:0.25, dsl:0.67,
-    cc_maj:{ US:135000, CA:121500, EU:78000, UK:95000, AU:110000 },
-    cc_min:{ US:20000,  CA:18000,  EU:8500,  UK:11000, AU:14000 },
-    maj_pct:{ US:0.22, CA:0.22, EU:0.22, UK:0.22, AU:0.22 },
-    rc:{ US:12000, CA:11000, EU:8900, UK:9500, AU:11500 },
+    cc_maj:{ US:135000, CA:121500, EU:78000, UK:95000, AU:110000, SEE:42900, MX:60800, ZA:33800 },
+    cc_min:{ US:20000,  CA:18000,  EU:8500,  UK:11000, AU:14000, SEE:4700, MX:9000, ZA:5000 },
+    maj_pct:{ US:0.22, CA:0.22, EU:0.22, UK:0.22, AU:0.22, SEE:0.22, MX:0.22, ZA:0.22 },
+    rc:{ US:12000, CA:11000, EU:8900, UK:9500, AU:11500, SEE:6000, MX:6000, ZA:3500 },
     def:{fi:4, cr:10, ri:10},
     desc:'Electric, gas, water, and telecom field crews — service trucks with aerial lifts and equipment pods responding to faults and planned maintenance.',
     src:'Geotab fleet telemetry PCR (n=592 US / 261 CA fleets, Apr 2026; UK/AU n<50 — regional avg used); NETS 2019 / EEI (US costs); CRISP 2018 (CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 / Eurostat ESAW NACE E (EU costs); BITRE 2022 (AU costs)'
   },
   'Oil & Gas': {
-    miles:{ US:38000, CA:34200, EU:21700, UK:20000, AU:21700 },
+    miles:{ US:38000, CA:34200, EU:21700, UK:20000, AU:21700, SEE:21700, MX:38000, ZA:38000 },
     mpg:14,
-    ir:{ US:0.0561, CA:0.0517, EU:0.0714, UK:0.0705, AU:0.0457 },
-    tr:{ US:0.42, CA:0.35, EU:0.15, UK:0.27, AU:0.14 },
+    ir:{ US:0.0561, CA:0.0517, EU:0.0714, UK:0.0705, AU:0.0457, SEE:0.0714, MX:0.0561, ZA:0.0561 },
+    tr:{ US:0.42, CA:0.35, EU:0.15, UK:0.27, AU:0.14, SEE:0.15, MX:0.42, ZA:0.15 },
     gas:0.28, dsl:0.67,
-    cc_maj:{ US:215000, CA:193500, EU:117000, UK:142000, AU:165000 },
-    cc_min:{ US:28000,  CA:25200,  EU:12000,  UK:15000,  AU:18000 },
-    maj_pct:{ US:0.30, CA:0.30, EU:0.30, UK:0.30, AU:0.30 },
-    rc:{ US:14000, CA:12900, EU:10300, UK:11100, AU:13400 },
+    cc_maj:{ US:215000, CA:193500, EU:117000, UK:142000, AU:165000, SEE:64400, MX:96800, ZA:53800 },
+    cc_min:{ US:28000,  CA:25200,  EU:12000,  UK:15000,  AU:18000, SEE:6600, MX:12600, ZA:7000 },
+    maj_pct:{ US:0.30, CA:0.30, EU:0.30, UK:0.30, AU:0.30, SEE:0.30, MX:0.30, ZA:0.30 },
+    rc:{ US:14000, CA:12900, EU:10300, UK:11100, AU:13400, SEE:6500, MX:7000, ZA:4000 },
     def:{fi:3, cr:7, ri:8},
     desc:'Oilfield services, pipeline inspection, and exploration support — high mileage across remote terrain with fatigue and adverse-road risk.',
     src:'Geotab fleet telemetry PCR (n=556 US / 216 CA / 62 EU / 111 AU fleets, Apr 2026); FMCSA / IOGP 2024 / Energy Safety Canada — transportation = 41% of O&G fatalities (US/CA costs); DfT TAG 2023 (UK costs); SafetyCube D3.2 / IOGP Europe (EU costs); BITRE 2022 / NRSPP (AU costs)'
   },
   'Transportation & Logistics': {
-    miles:{ US:55000, CA:74600, EU:68400, UK:75000, AU:49300 },
+    miles:{ US:55000, CA:74600, EU:68400, UK:75000, AU:49300, SEE:68400, MX:55000, ZA:55000 },
     mpg:7,
-    ir:{ US:0.0640, CA:0.0572, EU:0.1040, UK:0.0978, AU:0.0537 },
-    tr:{ US:0.58, CA:0.60, EU:0.18, UK:0.30, AU:0.22 },
+    ir:{ US:0.0640, CA:0.0572, EU:0.1040, UK:0.0978, AU:0.0537, SEE:0.1040, MX:0.0640, ZA:0.0640 },
+    tr:{ US:0.58, CA:0.60, EU:0.18, UK:0.30, AU:0.22, SEE:0.18, MX:0.58, ZA:0.18 },
     gas:0.10, dsl:0.83,
-    cc_maj:{ US:175000, CA:157500, EU:107000, UK:130000, AU:145000 },
-    cc_min:{ US:32000,  CA:28800,  EU:12500,  UK:15500,  AU:19000 },
-    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20 },
-    rc:{ US:15000, CA:13800, EU:11000, UK:11900, AU:14300 },
+    cc_maj:{ US:175000, CA:157500, EU:107000, UK:130000, AU:145000, SEE:58900, MX:78800, ZA:43800 },
+    cc_min:{ US:32000,  CA:28800,  EU:12500,  UK:15500,  AU:19000, SEE:6900, MX:14400, ZA:8000 },
+    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20, SEE:0.20, MX:0.20, ZA:0.20 },
+    rc:{ US:15000, CA:13800, EU:11000, UK:11900, AU:14300, SEE:7000, MX:7500, ZA:4500 },
     def:{fi:1, cr:5, ri:6},
     desc:'Regional and long-haul freight, dedicated fleet delivery — Class 7–8 trucks with high annual mileage and industry-leading turnover rates.',
     src:'Geotab fleet telemetry PCR (n=8,071 US / 5,132 CA / 742 UK / 2,755 EU / 320 AU fleets, Apr 2026); FMCSA 2024 / ATRI (US costs); CRISP 2018 / CTA (CA costs); DfT TAG 2023 / Logistics UK (UK costs); SafetyCube D3.2 / IRU / ETSC (EU costs); BITRE 2022 / NTC (AU costs)'
   },
   'Other': {
-    miles:{ US:20000, CA:12400, EU:12400, UK:15000, AU:15500 },
+    miles:{ US:20000, CA:12400, EU:12400, UK:15000, AU:15500, SEE:12400, MX:20000, ZA:20000 },
     mpg:18,
-    ir:{ US:0.0723, CA:0.0636, EU:0.0878, UK:0.0861, AU:0.0542 },
-    tr:{ US:0.25, CA:0.15, EU:0.14, UK:0.20, AU:0.12 },
+    ir:{ US:0.0723, CA:0.0636, EU:0.0878, UK:0.0861, AU:0.0542, SEE:0.0878, MX:0.0723, ZA:0.0723 },
+    tr:{ US:0.25, CA:0.15, EU:0.14, UK:0.20, AU:0.12, SEE:0.14, MX:0.25, ZA:0.14 },
     gas:0.52, dsl:0.30,
-    cc_maj:{ US:97000,  CA:87000, EU:53000, UK:65000, AU:75000 },
-    cc_min:{ US:14000,  CA:12600, EU:6000,  UK:7500,  AU:9500  },
-    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20 },
-    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600 },
+    cc_maj:{ US:97000,  CA:87000, EU:53000, UK:65000, AU:75000, SEE:29200, MX:43600, ZA:24200 },
+    cc_min:{ US:14000,  CA:12600, EU:6000,  UK:7500,  AU:9500, SEE:3300, MX:6300, ZA:3500 },
+    maj_pct:{ US:0.20, CA:0.20, EU:0.20, UK:0.20, AU:0.20, SEE:0.20, MX:0.20, ZA:0.20 },
+    rc:{ US:10000, CA:9200, EU:7400, UK:7900, AU:9600, SEE:5000, MX:5000, ZA:3000 },
     def:{fi:5, cr:12, ri:15},
     desc:'Mixed or non-classified fleet — applies industry-average benchmarks across fuel type, mileage, collision risk, and driver turnover.',
     src:'Geotab fleet telemetry PCR (n=25,460 US / 11,526 CA / 1,609 UK+AU / 5,548 EU fleets, Apr 2026); NETS 2019 / NSC all-industry (US costs); CRISP 2018 (CA costs); DfT TAG 2023 / HSE (UK costs); SafetyCube D3.2 / EC Road Safety Observatory (EU costs); BITRE 2022 / NRSPP (AU costs)'
@@ -1089,9 +1133,8 @@ function render() {
 function onRegion(regionName) {
   S.region = regionName;
   const reg = REGIONS[regionName];
-  document.querySelectorAll('.region-tab').forEach(t =>
-    t.classList.toggle('active', t.dataset.region === regionName)
-  );
+  const regSel = el('region-select');
+  if (regSel && regSel.value !== regionName) regSel.value = regionName;
   S.gp = reg.gp; S.dp = reg.dp;
   el('gas-price').value    = reg.gp.toFixed(2);
   el('diesel-price').value = reg.dp.toFixed(2);
@@ -1279,9 +1322,7 @@ function renderMethTable() {
 
 /* ── Init ──────────────────────────────────────────────────────────── */
 function init() {
-  document.querySelectorAll('.region-tab').forEach(tab =>
-    tab.addEventListener('click', () => onRegion(tab.dataset.region))
-  );
+  el('region-select').addEventListener('change', e => onRegion(e.target.value));
   el('fleet-type').addEventListener('change', e => onFleet(e.target.value));
   el('drivers').addEventListener('input', e => {
     S.drivers = Math.max(1, parseInt(e.target.value) || 1);
